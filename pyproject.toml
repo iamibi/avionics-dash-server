@@ -1,0 +1,10 @@
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+src_paths = ["src"]
+import_heading_stdlib = "Standard Library"
+import_heading_firstparty = "Custom Library"
+import_heading_thirdparty = "Third-Party Library"
+length_sort = true

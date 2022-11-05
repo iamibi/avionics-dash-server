@@ -7,6 +7,10 @@ name = "pypi"
 flask = "*"
 
 [dev-packages]
+black = "*"
+pylint = "*"
+isort = {extras = ["pipfile_deprecated_finder", "requirements_deprecated_finder"], version = "*"}
+bandit = {extras = ["toml"], version = "*"}
 
 [requires]
 python_version = "3.9"
