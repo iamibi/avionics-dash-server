@@ -2,7 +2,7 @@
 from flask import Blueprint, jsonify
 
 # Custom Library
-from src.common.constants import App, HttpMethod
+from avionics_dash_server.common.constants import App, HttpMethod
 
 # Create a blueprint for the project
 avionics_dash_bp = Blueprint(name=App.BLUEPRINT, import_name=__name__)
