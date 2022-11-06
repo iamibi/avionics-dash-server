@@ -36,6 +36,7 @@ import_heading_firstparty = "Custom Library"
 import_heading_thirdparty = "Third-Party Library"
 import_heading_localfolder = "Local Modules"
 length_sort = true
+from_first = true
 
 [tool.coverage.run]
 cover_pylib = false
