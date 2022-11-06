@@ -2,7 +2,7 @@
 from flask import Flask
 
 # Custom Library
-from api.api import avionics_dash_bp
+from avionics_dash_server.api.api import avionics_dash_bp
 
 
 def create_app() -> Flask:

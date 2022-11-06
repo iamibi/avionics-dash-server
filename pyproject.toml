@@ -1,12 +1,39 @@
+[tool.poetry]
+name = "avionics-dash-server"
+version = "0.1.0"
+description = ""
+authors = ["iamibi"]
+readme = "README.md"
+packages = [{include = "avionics_dash_server"}, {include = "avionics_dash_server/**/*.py"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+flask = "^2.2.2"
+pymongo = {extras = ["srv"], version = "^4.3.2"}
+pyyaml = "^6.0"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.2.0"
+
+[tool.poetry.group.dev.dependencies]
+isort = {extras = ["pipfile-deprecated-finder", "requirements-deprecated-finder"], version = "^5.10.1"}
+black = {extras = ["toml"], version = "^22.10.0"}
+pylint = "^2.15.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.black]
 line-length = 120
 
 [tool.isort]
 profile = "black"
-src_paths = ["src"]
+src_paths = ["avionics_dash_server"]
 import_heading_stdlib = "Standard Library"
 import_heading_firstparty = "Custom Library"
 import_heading_thirdparty = "Third-Party Library"
+import_heading_localfolder = "Local Modules"
 length_sort = true
 
 [tool.pylint.main]
