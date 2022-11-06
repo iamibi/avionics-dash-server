@@ -1,0 +1,25 @@
+default: &default
+  avionics_dash: &avionics_dash
+    db_name: avionics_dash_dev
+    collections:
+      - users
+      - modules
+      - assignments
+    host: localhost
+    port: 27017
+    auth_mechanism: "SCRAM-SHA-256"
+
+dev: &dev
+  <<: *default
+
+test: &test
+  <<: *default
+  avionics_dash:
+    <<: *avionics_dash
+    db_name: avionics_dash_test
+
+prod: &prod
+  <<: *default
+  avionics_dash:
+    <<: *avionics_dash
+    db_name: avionics_dash
