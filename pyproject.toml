@@ -14,6 +14,7 @@ pyyaml = "^6.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.2.0"
+coverage = {extras = ["toml"], version = "^6.5.0"}
 
 [tool.poetry.group.dev.dependencies]
 isort = {extras = ["pipfile-deprecated-finder", "requirements-deprecated-finder"], version = "^5.10.1"}
@@ -35,6 +36,11 @@ import_heading_firstparty = "Custom Library"
 import_heading_thirdparty = "Third-Party Library"
 import_heading_localfolder = "Local Modules"
 length_sort = true
+from_first = true
+
+[tool.coverage.run]
+cover_pylib = false
+source = ["avionics_dash_server"]
 
 [tool.pylint.main]
 # Analyse import fallback blocks. This can be used to support both Python 2 and 3
