@@ -2,12 +2,13 @@
 from pymongo import MongoClient, database, collection
 
 # Custom Library
+from avionics_dash_server.common import exceptions as exs
 from avionics_dash_server.config.settings import settings
 
 
 class DatabaseService:
-    _db: database.Database = None
-    _collections: collection.Collection = None
+    db: database.Database = None
+    collection: collection.Collection = None
 
     def __init__(self) -> None:
         db_name = settings.db.avionics_dash.db_name
@@ -20,16 +21,20 @@ class DatabaseService:
             authSource=db_name,
             authMechanism=settings.db.avionics_dash.auth_mechanism,
         )
-        self._db = client[db_name]
+        self.db = client[db_name]
 
-    def _create_index(self):
+    def create_index(self):
         raise NotImplementedError
 
-    def _insert(self):
+    def insert(self):
         raise NotImplementedError
 
-    def _find(self):
+    def find(self):
         raise NotImplementedError
 
-    def _update(self):
+    def update(self):
         raise NotImplementedError
+
+    def __is_collection_set(self):
+        if self.collection is None:
+            raise exs.DbCollectionNotSet

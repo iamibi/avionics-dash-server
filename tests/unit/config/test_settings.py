@@ -1,6 +1,3 @@
-# Standard Library
-from typing import NamedTuple
-
 # Third-Party Library
 import pytest
 
@@ -10,6 +7,7 @@ class TestSettings:
     def setup(self):
         # Custom Library
         from avionics_dash_server.config.settings import settings
+
         yield settings
 
     def test_settings_import(self):

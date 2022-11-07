@@ -40,7 +40,12 @@ class _Settings(_ConfigParser):
         if env not in const.App.VALID_ENVS:
             raise exs.ConfigurationError("Invalid environment value!")
 
-        self.__read_configurations(env)
+        try:
+            self.__read_configurations(env)
+        except exs.ConfigurationError:
+            raise
+        except Exception:
+            raise exs.ConfigurationError("Something went wrong!")
 
     @property
     def config(self):
@@ -81,15 +86,15 @@ class _Settings(_ConfigParser):
         env_password = self.__get_env(key=const.App.Env.DB_PASSWORD)
 
         if env_username in {None, ""} or env_password in {None, ""}:
-            raise exs.ConfigurationError("Unable to fetch username/password!")
+            raise exs.ConfigurationError("Unable to fetch database username/password!")
 
-        credentials[const.Credentials.USERNAME] = Template(username).substitute({
-            const.Credentials.DB[const.Credentials.USERNAME]: env_username
-        })
+        credentials[const.Credentials.USERNAME] = Template(username).substitute(
+            {const.Credentials.DB[const.Credentials.USERNAME]: env_username}
+        )
 
-        credentials[const.Credentials.PASSWORD] = Template(password).substitute({
-            const.Credentials.DB[const.Credentials.PASSWORD]: env_password
-        })
+        credentials[const.Credentials.PASSWORD] = Template(password).substitute(
+            {const.Credentials.DB[const.Credentials.PASSWORD]: env_password}
+        )
 
     @classmethod
     def __get_env(cls, key: str) -> Union[str, None]:
