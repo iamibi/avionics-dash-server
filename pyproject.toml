@@ -11,6 +11,7 @@ python = "^3.9"
 flask = "^2.2.2"
 pymongo = {extras = ["srv"], version = "^4.3.2"}
 pyyaml = "^6.0"
+python-dotenv = "^0.21.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.2.0"

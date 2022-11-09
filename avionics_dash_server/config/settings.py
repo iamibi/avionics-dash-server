@@ -1,4 +1,5 @@
 # Standard Library
+from string import Template
 from typing import Dict, Union, NamedTuple
 from collections import namedtuple
 import os
@@ -28,6 +29,8 @@ class _Settings(_ConfigParser):
 
     SETTINGS_PATH = os.path.dirname(os.path.abspath(__file__))
     SETTINGS_CONFIG = os.path.join(SETTINGS_PATH, "settings.yml")
+    DATABASE_CONFIG = os.path.join(SETTINGS_PATH, "mongo.yml")
+    CREDENTIALS = os.path.join(SETTINGS_PATH, "credentials.yml")
 
     __config: NamedTuple = None
 
@@ -37,7 +40,12 @@ class _Settings(_ConfigParser):
         if env not in const.App.VALID_ENVS:
             raise exs.ConfigurationError("Invalid environment value!")
 
-        self.__read_configurations(env)
+        try:
+            self.__read_configurations(env)
+        except exs.ConfigurationError:
+            raise
+        except Exception:
+            raise exs.ConfigurationError("Something went wrong!")
 
     @property
     def config(self):
@@ -49,9 +57,44 @@ class _Settings(_ConfigParser):
 
     def __get_env_config_values(self, env: str) -> Dict:
         app_config = self._read_file(self.SETTINGS_CONFIG)
+        db_config = self._read_file(self.DATABASE_CONFIG)
+        credentials = self._read_file(self.CREDENTIALS)
+
         configurations = app_config[env]
 
+        if "db" in configurations or "credentials" in configurations:
+            raise exs.ConfigurationError("Config Key Error!")
+
+        configurations["db"] = db_config[env]
+        configurations["credentials"] = self.__get_env_credentials(env=env, credentials=credentials)
+
         return configurations
+
+    def __get_env_credentials(self, env: str, credentials: Dict) -> Dict:
+        env_credentials = credentials[env]
+        if env == const.App.TEST_ENV:
+            return env_credentials
+
+        self.__set_db_credentials(env_credentials["db"])
+        return env_credentials
+
+    def __set_db_credentials(self, credentials: Dict) -> None:
+        username = credentials[const.Credentials.USERNAME]
+        password = credentials[const.Credentials.PASSWORD]
+
+        env_username = self.__get_env(key=const.App.Env.DB_USERNAME)
+        env_password = self.__get_env(key=const.App.Env.DB_PASSWORD)
+
+        if env_username in {None, ""} or env_password in {None, ""}:
+            raise exs.ConfigurationError("Unable to fetch database username/password!")
+
+        credentials[const.Credentials.USERNAME] = Template(username).substitute(
+            {const.Credentials.DB[const.Credentials.USERNAME]: env_username}
+        )
+
+        credentials[const.Credentials.PASSWORD] = Template(password).substitute(
+            {const.Credentials.DB[const.Credentials.PASSWORD]: env_password}
+        )
 
     @classmethod
     def __get_env(cls, key: str) -> Union[str, None]:
