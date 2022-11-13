@@ -1,3 +1,7 @@
+# Standard Library
+from enum import Enum
+
+
 class App:
     BLUEPRINT = "avionics_dash_blueprint"
     APP_ENV = "APP_ENV"
@@ -21,3 +25,8 @@ class HttpMethod:
     GET = "GET"
     POST = "POST"
     PUT = "PUT"
+
+
+class PasswordVerificationResult(Enum):
+    SUCCESS = 1
+    FAILED = 2
