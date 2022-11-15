@@ -1,4 +1,3 @@
-
 class Media:
     file_type: str
     name: str

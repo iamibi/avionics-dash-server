@@ -10,8 +10,6 @@ class Course:
     assignments: List[Assignment]
     course_media: List[Media]
 
-
-
 class Submission:
     assignment: Assignment
     student: Student
