@@ -26,6 +26,11 @@ class HttpMethod:
     POST = "POST"
     PUT = "PUT"
 
+class AssignmentType(Enum):
+    PERSONAL = 1
+    GROUP = 2
+    DISCUSSION = 3
+
 
 class PasswordVerificationResult(Enum):
     SUCCESS = 1

@@ -10,13 +10,7 @@ class Course:
     assignments: List[Assignment]
     course_media: List[Media]
 
-class Assignment:
-    name: str
-    description: str
-    available: datetime
-    due: datetime
-    points: int
-    assignment_type: AssignmentType 
+
 
 class Submission:
     assignment: Assignment
