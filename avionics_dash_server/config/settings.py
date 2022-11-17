@@ -76,6 +76,7 @@ class _Settings(_ConfigParser):
             return env_credentials
 
         self.__set_db_credentials(env_credentials["db"])
+        self.__set_jwt_credentials(env_credentials["jwt"])
         return env_credentials
 
     def __set_db_credentials(self, credentials: Dict) -> None:
@@ -94,6 +95,17 @@ class _Settings(_ConfigParser):
 
         credentials[const.Credentials.PASSWORD] = Template(password).substitute(
             {const.Credentials.DB[const.Credentials.PASSWORD]: env_password}
+        )
+
+    def __set_jwt_credentials(self, credentials: Dict) -> None:
+        key_name = credentials[const.Credentials.KEY]
+        env_key_val = self.__get_env(key=const.App.Env.JWT_KEY)
+
+        if env_key_val in {None, ""}:
+            raise exs.ConfigurationError("Unable to fetch JWT key!")
+
+        credentials[const.Credentials.KEY] = Template(key_name).substitute(
+            {const.Credentials.JWT[const.Credentials.KEY]: env_key_val}
         )
 
     @classmethod
