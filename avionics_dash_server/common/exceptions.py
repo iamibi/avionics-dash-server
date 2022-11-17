@@ -23,3 +23,15 @@ class DbCollectionNotSet(DatabaseError):
         if message is None:
             self.message = self.MESSAGE
         super(DbCollectionNotSet, self).__init__(message)
+
+
+class AuthenticationError(AvionicsDashError):
+    response_code: int = None
+    response_message: str = ""
+
+    def __init__(self, response_code: int = None, response_message: str = None) -> None:
+        if response_code is not None:
+            self.response_code = response_code
+        if response_message is not None:
+            self.response_message = response_message
+        super(AuthenticationError, self).__init__(self.response_message)

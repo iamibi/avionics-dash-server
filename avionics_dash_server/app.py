@@ -11,6 +11,6 @@ def create_app() -> Flask:
     app = Flask(__name__)
 
     # Register the application blueprint with the APIs
-    app.register_blueprint(avionics_dash_bp, url_prefix="/api")
+    app.register_blueprint(avionics_dash_bp)
 
     return app

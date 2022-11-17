@@ -13,12 +13,15 @@ class App:
     class Env:
         DB_USERNAME = "DB_USERNAME"
         DB_PASSWORD = "DB_PASSWORD"
+        JWT_KEY = "JWT_KEY"
 
 
 class Credentials:
     USERNAME = "username"
     PASSWORD = "password"
+    KEY = "key"
     DB = {USERNAME: "db_username", PASSWORD: "db_password"}
+    JWT = {KEY: "jwt_key"}
 
 
 class HttpMethod:

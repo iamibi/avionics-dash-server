@@ -1,2 +1,2 @@
 # Local Modules
-from . import api
+from . import api, auth
