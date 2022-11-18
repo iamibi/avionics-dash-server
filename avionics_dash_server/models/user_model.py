@@ -1,10 +1,11 @@
 # Standard Library
 from datetime import datetime
+from typing import List
 
 # Third-Party Library
 from pydantic import BaseModel, validator
 
-from typing import List
+# Custom Library
 from course_model import Course
 
 class User:
@@ -39,5 +40,5 @@ class PasswordModel(BaseModel):
     def check_timestamp(cls, v):
         # Check the timezone is UTC or not
         if v.tzname() != "UTC":
-            return ValueError("The timezone is not in UTC format")
+            raise ValueError("The timezone is not in UTC format")
         return v

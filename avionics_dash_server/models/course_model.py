@@ -1,7 +1,10 @@
+# Standard Library
 import datetime
+
+# Custom Library
 import user_model
 from media_model import Media
-from enums import AssignmentType
+from avionics_dash_server.common.constants import AssignmentType
 
 class Course:
     name: str
