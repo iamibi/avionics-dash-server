@@ -7,29 +7,20 @@ from pydantic import BaseModel, validator
 
 # Custom Library
 from course_model import Course
+from avionics_dash_server.common import UserRole
 
 class User:
     fname: str
     lname: str
     email: str
     password: str
+    role: UserRole
 
     def serialize(self):
         pass
 
     def fromDict(self):
         pass
-
-class Student(User):
-    role = 'student'
-    courses: List[Course]
-
-class Teacher(User):
-    role = 'teacher'
-    courses: List[Course]
-
-class Admin(User):
-    role = 'admin'
 
 class PasswordModel(BaseModel):
     password_hash: str
