@@ -9,19 +9,6 @@ from pydantic import BaseModel, validator
 from course_model import Course
 from avionics_dash_server.common import UserRole
 
-class User:
-    fname: str
-    lname: str
-    email: str
-    password: str
-    role: UserRole
-
-    def serialize(self):
-        pass
-
-    def fromDict(self):
-        pass
-
 class PasswordModel(BaseModel):
     password_hash: str
     created_at: datetime
@@ -33,3 +20,16 @@ class PasswordModel(BaseModel):
         if v.tzname() != "UTC":
             raise ValueError("The timezone is not in UTC format")
         return v
+
+class User:
+    fname: str
+    lname: str
+    email: str
+    password: PasswordModel
+    role: UserRole
+
+    def serialize(self):
+        pass
+
+    def fromDict(self):
+        pass
