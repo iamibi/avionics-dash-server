@@ -21,7 +21,7 @@ test_users = [
 ]
 
 result = users.insert_many(test_users)
-print("Inserted {} re")
+print("Inserted {} records to the users collection".format(result))
 
 test_courses = [
     {"_id": "1", "code": "GPS101", "name": "Intro to GPS Navigation", "students": ["1"], 
@@ -30,11 +30,13 @@ test_courses = [
         "teachers": ["3"]}
 ]
 
-courses.insert_many(test_courses)
+result = courses.insert_many(test_courses)
+print("Inserted {} records to the courses collection".format(result))
 
 test_assignments = [
     {"_id": "1", "name": "Quiz 1", "type": "PERSONAL", "course": "GPS101"},
     {"_id": "2", "name": "Discussion 1", "type": "DISCUSSION", "course": "GPS101"},
     {"_id": "3", "name": "Project 1", "type": "GROUP", "course": "FLY101"}
 ]
-assignments.insert_many(test_assignments)
+result = assignments.insert_many(test_assignments)
+print("Inserted {} records to the assignments collection".format(result))
