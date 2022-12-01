@@ -27,10 +27,11 @@ def status():
 def login_user():
     request_json = request.json
 
-    if "email" not in request_json:
-        raise "No email passed"
-    token = generate_token_for_email(request_json["email"])
+    if "email" not in request_json or "password" not in request_json:
+        return jsonify({"error": "Required credentials were not found!"}), 400
 
+    platform_helper.authenticate_user(email=request_json["email"], password=request_json["password"])
+    token = generate_token_for_email(request_json["email"])
     return jsonify({"token": token}), 201
 
 
@@ -45,3 +46,15 @@ def register():
     request_json = request.json
     platform_helper.register_user(user_data=request_json["data"])
     return jsonify({}), 201
+
+
+@avionics_dash_bp.route("/user", methods=[HttpMethod.GET])
+@bearer_token_auth.login_required
+def get_user():
+    query_params = request.args
+
+    if "email" not in query_params:
+        return jsonify({"error": "Email not passed as query parameter"}), 400
+
+    user = platform_helper.get_user(email=query_params["email"])
+    return jsonify({"data": user}), 200

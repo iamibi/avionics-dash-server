@@ -47,6 +47,25 @@ class TestUserService:
         assert sorted(tuple(user.keys())) == sorted(all_keys)
         assert user["email"] == user_obj["email"]
 
+    def test_by_email_with_password(self, setup_and_teardown_func):
+        user_service = setup_and_teardown_func
+
+        user_obj = self.create_test_user(user_service)
+
+        try:
+            user = user_service.by_email(email_id="abc@abc.com", with_pass=True)
+        except Exception as ex:
+            assert False, f"Failed to fetch user. Error: {ex}"
+
+        all_keys = ("_id", "email", "password", "first_name", "last_name", "created_at", "updated_at")
+        assert sorted(tuple(user.keys())) == sorted(all_keys)
+        assert user["email"] == user_obj["email"]
+        assert isinstance(user["password"], dict) is True
+
+        password_keys = ("password_hash", "updated_at", "created_at")
+        assert sorted(tuple(user["password"].keys())) == sorted(password_keys)
+        assert isinstance(user["password"]["password_hash"], str) is True
+
     @classmethod
     def create_test_user(cls, user_service):
         user_obj = {"email": "abc@abc.com", "password": "abcd1234", "first_name": "Mike", "last_name": "Ross"}

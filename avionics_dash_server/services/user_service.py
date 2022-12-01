@@ -9,7 +9,7 @@ from bson import ObjectId
 from avionics_dash_server.util.util import Util
 from avionics_dash_server.config.settings import settings
 from avionics_dash_server.util.password_hasher import PasswordHasher
-from avionics_dash_server.models.password_model import PasswordModel
+from avionics_dash_server.models.user_model import PasswordModel, User
 
 # Local Modules
 from .database_service import DatabaseService
@@ -31,6 +31,7 @@ class UserService(DatabaseService):
         user = self.find_one(filter_dict={"email": email_id})
         if user is not None and with_pass is False:
             del user["password"]
+        # user_obj = User.parse_obj(user)
         return user
 
     def create_user(self, user_obj: Dict) -> None:

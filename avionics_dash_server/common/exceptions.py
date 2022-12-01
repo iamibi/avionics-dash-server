@@ -43,3 +43,7 @@ class ServiceInitializationError(AvionicsDashError):
 
 class ValidationError(AvionicsDashError):
     pass
+
+
+class UserAlreadyExistsError(ValidationError):
+    pass
