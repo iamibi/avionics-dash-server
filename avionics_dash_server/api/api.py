@@ -4,9 +4,10 @@ from flask import Blueprint, jsonify, request
 # Custom Library
 from avionics_dash_server.api.auth.auth import (
     bearer_token_auth,
-    generate_token_for_username,
+    generate_token_for_email,
 )
 from avionics_dash_server.common.constants import App, HttpMethod
+from avionics_dash_server.helpers.platform_helper import platform_helper
 
 # Create a blueprint for the project
 avionics_dash_bp = Blueprint(name=App.BLUEPRINT, import_name=__name__, url_prefix="/api/v1")
@@ -26,12 +27,9 @@ def status():
 def login_user():
     request_json = request.json
 
-    if "username" not in request_json:
-        raise "No username passed"
-
-    # TODO: Check whether the username is valid or not
-
-    token = generate_token_for_username(request_json["username"])
+    if "email" not in request_json:
+        raise "No email passed"
+    token = generate_token_for_email(request_json["email"])
 
     return jsonify({"token": token}), 201
 
@@ -40,3 +38,10 @@ def login_user():
 @bearer_token_auth.login_required
 def verify():
     return jsonify({"message": "The token is valid!"}), 200
+
+
+@avionics_dash_bp.route("/auth/register", methods=[HttpMethod.POST])
+def register():
+    request_json = request.json
+    platform_helper.register_user(user_data=request_json["data"])
+    return jsonify({}), 201

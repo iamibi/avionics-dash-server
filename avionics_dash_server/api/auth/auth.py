@@ -1,17 +1,22 @@
 # Third-Party Library
-from flask_httpauth import HTTPTokenAuth
 import jwt
+from flask_httpauth import HTTPTokenAuth
 
 # Custom Library
 from avionics_dash_server.common import exceptions as ex
 from avionics_dash_server.util.util import Util
 from avionics_dash_server.config.settings import settings
+from avionics_dash_server.helpers.platform_helper import platform_helper
 
 # Create a Bearer token
 bearer_token_auth = HTTPTokenAuth(scheme="Bearer")
 
 
-def generate_token_for_username(username: str) -> str:
+def generate_token_for_email(email_id: str) -> str:
+    user = platform_helper.get_user(email=email_id)
+    if user is None or "email" not in user:
+        raise "No user found!"
+
     try:
         current_utc_time = Util.utc_now()
 
@@ -20,7 +25,7 @@ def generate_token_for_username(username: str) -> str:
                 "exp": Util.add_time_diff(timestamp=current_utc_time, hours=24),
                 "iat": current_utc_time,
                 "sub": str(Util.generate_uuid()),
-                "username": username,
+                "email": user["email"],
             },
             key=settings.credentials.jwt.key,
             algorithm="HS256",
@@ -43,7 +48,7 @@ def verify_token(token: str) -> bool:
     except jwt.InvalidTokenError as invalid_jwt:
         raise ex.AuthenticationError(response_code=400, response_message=f"Bad Request. {invalid_jwt}")
 
-    # TODO: Update this verification
-    if decoded_token["username"] == "test":
+    user = platform_helper.get_user(email=decoded_token["email"])
+    if user is not None:
         return True
     return False

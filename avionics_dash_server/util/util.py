@@ -1,6 +1,12 @@
 # Standard Library
-from datetime import datetime, timezone, timedelta
 import uuid
+from datetime import datetime, timezone, timedelta
+
+# Third-Party Library
+from email_validator import EmailNotValidError, validate_email
+
+# Custom Library
+from avionics_dash_server.common import exceptions as exc
 
 
 class Util:
@@ -28,3 +34,12 @@ class Util:
     @classmethod
     def generate_uuid(cls) -> uuid.UUID:
         return uuid.uuid4()
+
+    @classmethod
+    def check_email(cls, email_id: str) -> str:
+        try:
+            validation = validate_email(email=email_id)
+        except EmailNotValidError:
+            raise exc.ValidationError("Invalid E-Mail passed!")
+
+        return validation.email

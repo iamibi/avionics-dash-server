@@ -19,10 +19,6 @@ class DatabaseService:
             host=settings.db.avionics_dash.host,
             port=settings.db.avionics_dash.port,
             tz_aware=True,
-            username=settings.credentials.db.username,
-            password=settings.credentials.db.password,
-            authSource=db_name,
-            authMechanism=settings.db.avionics_dash.auth_mechanism,
         )
         self._db = client[db_name]
 
@@ -62,6 +58,14 @@ class DatabaseService:
 
         if not response.acknowledged:
             raise exs.DatabaseError("insert_many query failed internally!")
+
+    def find_one(self, *, filter_dict) -> Dict:
+        self.__is_collection_set()
+
+        try:
+            return self._collection.find_one(filter=filter_dict)
+        except errors.PyMongoError as py_err:
+            raise exs.DatabaseError("Error occurred while performing find_one!") from py_err
 
     def find(self, *, filter_dict: Dict) -> List:
         self.__is_collection_set()
