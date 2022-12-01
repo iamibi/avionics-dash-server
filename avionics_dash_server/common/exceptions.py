@@ -35,3 +35,15 @@ class AuthenticationError(AvionicsDashError):
         if response_message is not None:
             self.response_message = response_message
         super(AuthenticationError, self).__init__(self.response_message)
+
+
+class ServiceInitializationError(AvionicsDashError):
+    pass
+
+
+class ValidationError(AvionicsDashError):
+    pass
+
+
+class UserAlreadyExistsError(ValidationError):
+    pass

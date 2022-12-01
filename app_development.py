@@ -6,7 +6,7 @@ if __name__ == "__main__":
     load_dotenv()
 
     # Custom Library
-    from app import create_app
+    from avionics_dash_server.app import create_app
 
     app = create_app()
     app.run(debug=True)

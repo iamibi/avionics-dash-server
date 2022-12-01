@@ -1,8 +1,8 @@
 # Standard Library
+import os
 from string import Template
 from typing import Dict, Union, NamedTuple
 from collections import namedtuple
-import os
 
 # Third-Party Library
 import yaml
