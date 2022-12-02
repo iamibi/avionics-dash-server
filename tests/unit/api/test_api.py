@@ -1,9 +1,9 @@
 # Third-Party Library
 import pytest
+from tests.data import DataStore
 
 # Custom Library
 from avionics_dash_server.app import create_app
-from tests.data import DataStore
 
 
 class TestApi:
@@ -54,7 +54,7 @@ class TestApi:
         response = test_client.post(
             "/api/v1/auth/login",
             json={"email": "abcd@abc.com", "password": "abcd1234"},
-            headers={"Content-Type": "application/json"}
+            headers={"Content-Type": "application/json"},
         )
         assert response.status_code == 201
         assert "token" in response.json

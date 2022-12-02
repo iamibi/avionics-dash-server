@@ -41,8 +41,7 @@ class PlatformHelper:
 
         try:
             return self.services.user_service.verify_user_password(
-                retrieved_hash=user_obj["password"]["password_hash"],
-                provided_password=password
+                retrieved_hash=user_obj["password"]["password_hash"], provided_password=password
             )
         except Exception as ex:
             logger.error("Error occurred while checking the password", ex)
