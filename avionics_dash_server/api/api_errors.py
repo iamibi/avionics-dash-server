@@ -18,3 +18,11 @@ def api_errors(app: Flask) -> None:
     @app.errorhandler(exs.ValidationError)
     def validation_error(e):
         return jsonify({"error": "Validation Failed! Bad Request"}), 400
+
+    @app.errorhandler(exceptions.Forbidden)
+    def forbidden_error(e):
+        return jsonify({"error": "Forbidden"}), 403
+
+    @app.errorhandler(exs.AuthenticationError)
+    def authentication_error(e):
+        return jsonify({"error": "Authentication Failed!"}), 401

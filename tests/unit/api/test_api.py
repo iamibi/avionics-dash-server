@@ -46,7 +46,21 @@ class TestApi:
         )
 
         assert response.status_code == 201
-        assert response.json == {}
+        assert "data" in response.json
+
+    def test_register_with_same_user(self, setup_and_teardown_func):
+        test_client = setup_and_teardown_func
+        self.create_user(test_client)
+        user_data = {
+            "first_name": "Mike",
+            "last_name": "Ross",
+            "email": "abcd@abc.com",
+            "password": "abcd1234",
+        }
+        response = test_client.post(
+            "/api/v1/auth/register", json={"data": user_data}, headers={"Content-Type": "application/json"}
+        )
+        assert response.status_code == 400
 
     def test_login(self, setup_and_teardown_func):
         test_client = setup_and_teardown_func
@@ -58,6 +72,26 @@ class TestApi:
         )
         assert response.status_code == 201
         assert "token" in response.json
+
+    def test_get_user(self, setup_and_teardown_func):
+        test_client = setup_and_teardown_func
+        self.create_user(test_client)
+
+        # Login
+        login_response = test_client.post(
+            "/api/v1/auth/login",
+            json={"email": "abcd@abc.com", "password": "abcd1234"},
+            headers={"Content-Type": "application/json"},
+        )
+        assert login_response.status_code == 201
+        assert "token" in login_response.json
+
+        response = test_client.get(
+            "/api/v1/users/abcd%40abc.com", headers={"Authorization": f"Bearer {login_response.json['token']}"}
+        )
+
+        assert response.status_code == 200
+        assert "data" in response.json
 
     @classmethod
     def create_user(cls, test_client):
@@ -72,4 +106,4 @@ class TestApi:
         )
 
         assert response.status_code == 201
-        assert response.json == {}
+        assert "data" in response.json
