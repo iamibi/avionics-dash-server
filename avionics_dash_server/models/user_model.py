@@ -1,6 +1,6 @@
 # Standard Library
-from datetime import datetime
 from typing import Any, Dict
+from datetime import datetime
 
 # Third-Party Library
 from bson import ObjectId
