@@ -8,8 +8,8 @@ from bson import ObjectId
 # Custom Library
 from avionics_dash_server.util.util import Util
 from avionics_dash_server.config.settings import settings
+from avionics_dash_server.models.user_model import User, PasswordModel
 from avionics_dash_server.util.password_hasher import PasswordHasher
-from avionics_dash_server.models.user_model import PasswordModel, User
 
 # Local Modules
 from .database_service import DatabaseService

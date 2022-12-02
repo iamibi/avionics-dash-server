@@ -2,11 +2,14 @@
 import datetime
 from typing import List
 
-# Custom Library
+# Third-Party Library
 from user_model import User
-from assignment_model import Assignment
 from media_model import Media
+from assignment_model import Assignment
+
+# Custom Library
 from avionics_dash_server.common.constants import AssignmentType
+
 
 class Course:
     name: str
@@ -14,6 +17,7 @@ class Course:
     teachers: List[User]
     assignments: List[Assignment]
     course_media: List[Media]
+
 
 class Submission:
     assignment: Assignment

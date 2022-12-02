@@ -2,8 +2,8 @@
 from datetime import datetime
 
 # Third-Party Library
-from pydantic import BaseModel, validator
 from bson import ObjectId
+from pydantic import BaseModel, validator
 
 
 class PasswordModel(BaseModel):
