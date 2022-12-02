@@ -45,3 +45,8 @@ class UserRole(Enum):
     STUDENT = 1
     TEACHER = 2
     ADMIN = 3
+
+
+class Limits:
+    USER_NAME_LIMIT = 10
+    PASSWORD_LENGTH_LIMIT = 25

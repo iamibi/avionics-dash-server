@@ -1,8 +1,10 @@
 # Standard Library
 import uuid
+from typing import Any
 from datetime import datetime, timezone, timedelta
 
 # Third-Party Library
+from bson import ObjectId
 from email_validator import EmailNotValidError, validate_email
 
 # Custom Library
@@ -43,3 +45,15 @@ class Util:
             raise exc.ValidationError("Invalid E-Mail passed!")
 
         return validation.email
+
+    @classmethod
+    def is_bson_id(cls, identifier: Any) -> bool:
+        return ObjectId.is_valid(oid=identifier)
+
+    @classmethod
+    def is_email_id(cls, identifier: Any) -> bool:
+        try:
+            cls.check_email(email_id=identifier)
+        except exc.ValidationError:
+            return False
+        return True

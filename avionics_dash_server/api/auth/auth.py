@@ -13,7 +13,7 @@ bearer_token_auth = HTTPTokenAuth(scheme="Bearer")
 
 
 def generate_token_for_email(email_id: str) -> str:
-    user = platform_helper.get_user(email=email_id)
+    user = platform_helper.get_user(user_id=email_id)
     if user is None or "email" not in user:
         raise "No user found!"
 
@@ -48,7 +48,7 @@ def verify_token(token: str) -> bool:
     except jwt.InvalidTokenError as invalid_jwt:
         raise ex.AuthenticationError(response_code=400, response_message=f"Bad Request. {invalid_jwt}")
 
-    user = platform_helper.get_user(email=decoded_token["email"])
+    user = platform_helper.get_user(user_id=decoded_token["email"])
     if user is not None:
         return True
     return False

@@ -2,6 +2,7 @@
 from flask import Blueprint, jsonify, request
 
 # Custom Library
+from avionics_dash_server.common import exceptions as exs
 from avionics_dash_server.api.auth.auth import (
     bearer_token_auth,
     generate_token_for_email,
@@ -30,31 +31,34 @@ def login_user():
     if "email" not in request_json or "password" not in request_json:
         return jsonify({"error": "Required credentials were not found!"}), 400
 
-    platform_helper.authenticate_user(email=request_json["email"], password=request_json["password"])
-    token = generate_token_for_email(request_json["email"])
-    return jsonify({"token": token}), 201
-
-
-@avionics_dash_bp.route("/auth/verify", methods=[HttpMethod.GET])
-@bearer_token_auth.login_required
-def verify():
-    return jsonify({"message": "The token is valid!"}), 200
+    if platform_helper.authenticate_user(email=request_json["email"], password=request_json["password"]) is True:
+        token = generate_token_for_email(request_json["email"])
+        return jsonify({"token": token}), 201
+    raise exs.AuthenticationError
 
 
 @avionics_dash_bp.route("/auth/register", methods=[HttpMethod.POST])
 def register():
     request_json = request.json
-    platform_helper.register_user(user_data=request_json["data"])
-    return jsonify({}), 201
+    user = platform_helper.register_user(user_data=request_json["data"])
+    return jsonify({"data": user}), 201
 
 
-@avionics_dash_bp.route("/user", methods=[HttpMethod.GET])
+@avionics_dash_bp.route("/users/<string:user_id>", methods=[HttpMethod.GET])
 @bearer_token_auth.login_required
-def get_user():
-    query_params = request.args
+def get_user(user_id: str):
+    if user_id in {None, ""}:
+        return jsonify({"error": "User ID not passed"}), 400
 
-    if "email" not in query_params:
-        return jsonify({"error": "Email not passed as query parameter"}), 400
-
-    user = platform_helper.get_user(email=query_params["email"])
+    user = platform_helper.get_user(user_id=user_id)
     return jsonify({"data": user}), 200
+
+
+@avionics_dash_bp.route("/courses/<string:course_id>/modules", methods=[HttpMethod.GET])
+def get_modules_for_course(course_id: str):
+    raise NotImplementedError
+
+
+@avionics_dash_bp.route("/assignments", methods=[HttpMethod.GET])
+def get_all_assignments():
+    raise NotImplementedError

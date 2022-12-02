@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Dict, Union
+from typing import Dict, Optional
 
 # Third-Party Library
 import pymongo
@@ -21,18 +21,13 @@ class UserService(DatabaseService):
         self._collection = self._db[settings.db.avionics_dash.collections.users]
         self.index(mapping=[("email", pymongo.ASCENDING)], unique=True)
 
-    def by_id(self, bson_id: ObjectId, with_pass: bool = False) -> Union[Dict, None]:
+    def by_id(self, bson_id: ObjectId, with_pass: bool = False) -> User:
         user = self.find_one(filter_dict={"_id": bson_id})
-        if user is not None and with_pass is False:
-            del user["password"]
-        return user
+        return self.__convert_to_user_obj(user=user, with_pass=with_pass)
 
-    def by_email(self, email_id: str, with_pass: bool = False) -> Union[Dict, None]:
+    def by_email(self, email_id: str, with_pass: bool = False) -> User:
         user = self.find_one(filter_dict={"email": email_id})
-        if user is not None and with_pass is False:
-            del user["password"]
-        # user_obj = User.parse_obj(user)
-        return user
+        return self.__convert_to_user_obj(user=user, with_pass=with_pass)
 
     def create_user(self, user_obj: Dict) -> None:
         password_hash = self.create_password_hash(password=user_obj["password"])
@@ -57,3 +52,14 @@ class UserService(DatabaseService):
         )
 
         return True if verification_status.SUCCESS else False
+
+    @classmethod
+    def __convert_to_user_obj(cls, user: Dict, with_pass: bool = False) -> User:
+        user_obj = None
+        if user is not None:
+            if with_pass is False:
+                del user["password"]
+            user["identifier"] = user["_id"]
+            del user["_id"]
+            user_obj = User.parse_obj(user)
+        return user_obj

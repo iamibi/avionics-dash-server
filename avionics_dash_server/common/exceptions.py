@@ -46,4 +46,5 @@ class ValidationError(AvionicsDashError):
 
 
 class UserAlreadyExistsError(ValidationError):
-    pass
+    def __init__(self):
+        super(UserAlreadyExistsError, self).__init__("User Already Exists!")
