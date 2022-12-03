@@ -17,9 +17,8 @@ def prod_deploy():
     # Load Environment Variables
     load_dotenv()
 
-    if os.environ["APP_ENV"] == App.PROD_ENV:
-        # Custom Library
-        from avionics_dash_server.app import create_app
+    # Custom Library
+    from avionics_dash_server.app import create_app
 
-        app = create_app()
-        app.run(debug=False)
+    app = create_app()
+    app.run(host="0.0.0.0", port=8000, debug=False)
