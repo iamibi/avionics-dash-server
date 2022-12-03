@@ -3,6 +3,7 @@ import pytest
 from tests.data import DataStore
 
 # Custom Library
+from avionics_dash_server.models.user_model import User, PasswordModel
 from avionics_dash_server.services.user_service import UserService
 
 
@@ -10,14 +11,15 @@ class TestUserService:
     @pytest.fixture(scope="class")
     def setup_and_teardown_class(self):
         data_store = DataStore(collection_name="users")
+        data_store.clean_up_collection()
         yield data_store
-        data_store.clean_up_user_collection()
+        data_store.clean_up_collection()
 
     @pytest.fixture(scope="function")
     def setup_and_teardown_func(self, setup_and_teardown_class):
         user_service = UserService()
         yield user_service
-        setup_and_teardown_class.clean_up_user_collection()
+        setup_and_teardown_class.clean_up_collection()
 
     def test_user_service_init(self):
         user_service = UserService()
@@ -43,9 +45,8 @@ class TestUserService:
         except Exception as ex:
             assert False, f"Failed to fetch user. Error: {ex}"
 
-        all_keys = ("_id", "email", "first_name", "last_name", "created_at", "updated_at")
-        assert sorted(tuple(user.keys())) == sorted(all_keys)
-        assert user["email"] == user_obj["email"]
+        assert isinstance(user, User) is True
+        assert user_obj["email"] == user.email
 
     def test_by_email_with_password(self, setup_and_teardown_func):
         user_service = setup_and_teardown_func
@@ -57,14 +58,9 @@ class TestUserService:
         except Exception as ex:
             assert False, f"Failed to fetch user. Error: {ex}"
 
-        all_keys = ("_id", "email", "password", "first_name", "last_name", "created_at", "updated_at")
-        assert sorted(tuple(user.keys())) == sorted(all_keys)
-        assert user["email"] == user_obj["email"]
-        assert isinstance(user["password"], dict) is True
-
-        password_keys = ("password_hash", "updated_at", "created_at")
-        assert sorted(tuple(user["password"].keys())) == sorted(password_keys)
-        assert isinstance(user["password"]["password_hash"], str) is True
+        assert isinstance(user, User) is True
+        assert user_obj["email"] == user.email
+        assert isinstance(user.password, PasswordModel)
 
     @classmethod
     def create_test_user(cls, user_service):

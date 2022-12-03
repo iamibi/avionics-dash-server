@@ -54,11 +54,30 @@ def get_user(user_id: str):
     return jsonify({"data": user}), 200
 
 
-@avionics_dash_bp.route("/courses/<string:course_id>/modules", methods=[HttpMethod.GET])
-def get_modules_for_course(course_id: str):
-    raise NotImplementedError
+@avionics_dash_bp.route("/courses/<string:course_id>", methods=[HttpMethod.GET])
+@bearer_token_auth.login_required
+def get_course(course_id: str):
+    if course_id in {None, ""}:
+        return jsonify({"error": "Course ID not passed!"}), 400
+
+    course = platform_helper.get_course(course_id=course_id)
+    return jsonify({"data": course}), 200
 
 
-@avionics_dash_bp.route("/assignments", methods=[HttpMethod.GET])
-def get_all_assignments():
-    raise NotImplementedError
+@avionics_dash_bp.route("/modules/<string:module_id>", methods=[HttpMethod.GET])
+@bearer_token_auth.login_required
+def get_module(module_id: str):
+    if module_id in {None, ""}:
+        return jsonify({"error": "Module ID not passed!"}), 400
+
+    module = platform_helper.get_module(module_id=module_id)
+    return jsonify({"data": module}), 200
+
+
+@avionics_dash_bp.route("/assignments/<string:assignment_id>", methods=[HttpMethod.GET])
+def get_assignment(assignment_id: str):
+    if assignment_id in {None, ""}:
+        return jsonify({"error": "Module ID not passed!"}), 400
+
+    assignment = platform_helper.get_assignment(assignment_id=assignment_id)
+    return jsonify({"data": assignment}), 200

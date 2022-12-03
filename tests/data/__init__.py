@@ -16,7 +16,7 @@ class DataStore:
         self.__db = client[db_name]
         self.__collection = self.__db.get_collection(name=collection_name)
 
-    def clean_up_user_collection(self):
+    def clean_up_collection(self) -> int:
         deleted = self.__collection.delete_many({})
         return deleted.deleted_count
 

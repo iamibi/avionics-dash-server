@@ -11,14 +11,14 @@ class TestApi:
     def setup_and_teardown_class(self):
         data_store = DataStore(collection_name="users")
         yield data_store
-        data_store.clean_up_user_collection()
+        data_store.clean_up_collection()
 
     @pytest.fixture(scope="function")
     def setup_and_teardown_func(self, setup_and_teardown_class):
         app = create_app()
         with app.test_client() as test_client:
             yield test_client
-        setup_and_teardown_class.clean_up_user_collection()
+        setup_and_teardown_class.clean_up_collection()
 
     def test_api_root(self, setup_and_teardown_func):
         test_client = setup_and_teardown_func
@@ -36,10 +36,16 @@ class TestApi:
         test_client = setup_and_teardown_func
 
         user_data = {
-            "first_name": "Mike",
-            "last_name": "Ross",
+            "firstName": "Mike",
+            "lastName": "Ross",
             "email": "abcd@abc.com",
             "password": "abcd1234",
+            "confirmPassword": "abcd1234",
+            "address": "100 North Tryon Street, Charlotte, NC 28255",
+            "phone": "+18004321000",
+            "role": "s",
+            "dob": "1/1/2000",
+            "gender": "M",
         }
         response = test_client.post(
             "/api/v1/auth/register", json={"data": user_data}, headers={"Content-Type": "application/json"}
@@ -52,10 +58,16 @@ class TestApi:
         test_client = setup_and_teardown_func
         self.create_user(test_client)
         user_data = {
-            "first_name": "Mike",
-            "last_name": "Ross",
+            "firstName": "Mike",
+            "lastName": "Ross",
             "email": "abcd@abc.com",
             "password": "abcd1234",
+            "confirmPassword": "abcd1234",
+            "address": "100 North Tryon Street, Charlotte, NC 28255",
+            "phone": "+18004321000",
+            "role": "s",
+            "dob": "1/1/2000",
+            "gender": "M",
         }
         response = test_client.post(
             "/api/v1/auth/register", json={"data": user_data}, headers={"Content-Type": "application/json"}
@@ -96,10 +108,16 @@ class TestApi:
     @classmethod
     def create_user(cls, test_client):
         user_data = {
-            "first_name": "Mike",
-            "last_name": "Ross",
+            "firstName": "Mike",
+            "lastName": "Ross",
             "email": "abcd@abc.com",
             "password": "abcd1234",
+            "confirmPassword": "abcd1234",
+            "address": "100 North Tryon Street, Charlotte, NC 28255",
+            "phone": "+18004321000",
+            "role": "s",
+            "dob": "1/1/2000",
+            "gender": "M",
         }
         response = test_client.post(
             "/api/v1/auth/register", json={"data": user_data}, headers={"Content-Type": "application/json"}

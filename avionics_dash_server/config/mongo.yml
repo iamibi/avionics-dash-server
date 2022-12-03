@@ -4,6 +4,7 @@ default: &default
     collections:
       users: users
       modules: modules
+      courses: courses
       assignments: assignments
     host: localhost
     port: 27017
