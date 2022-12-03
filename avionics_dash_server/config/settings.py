@@ -75,7 +75,7 @@ class _Settings(_ConfigParser):
         if env == const.App.TEST_ENV:
             return env_credentials
 
-        self.__set_db_credentials(env_credentials["db"])
+        # self.__set_db_credentials(env_credentials["db"])
         self.__set_jwt_credentials(env_credentials["jwt"])
         return env_credentials
 
