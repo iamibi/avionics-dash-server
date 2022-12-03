@@ -8,7 +8,7 @@ from avionics_dash_server.common.constants import App
 logger = logging.getLogger(__name__)
 
 
-def prod_deploy():
+def prod_deploy(*args, **kwargs):
     logger.info("Starting Prod Service!")
 
     # Third-Party Library
