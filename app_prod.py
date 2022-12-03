@@ -1,7 +1,16 @@
-from avionics_dash_server.common.constants import App
+# Standard Library
 import os
+import logging
 
-if __name__ == "__main__":
+# Custom Library
+from avionics_dash_server.common.constants import App
+
+logger = logging.getLogger(__name__)
+
+
+def prod_deploy():
+    logger.info("Starting Prod Service!")
+
     # Third-Party Library
     from dotenv import load_dotenv
 
