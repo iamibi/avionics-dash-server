@@ -1,6 +1,6 @@
 # Standard Library
 from typing import Any, Dict
-from datetime import datetime
+from datetime import date, datetime
 
 # Third-Party Library
 from bson import ObjectId
@@ -30,7 +30,7 @@ class User(BaseModel):
     identifier: ObjectId = None
     first_name: str
     last_name: str
-    dob: datetime
+    dob: date
     gender: str
     email: str
     role: Roles.UserRole
@@ -69,5 +69,5 @@ class User(BaseModel):
             "email": self.email,
             "role": self.role.value,
             "address": self.address,
-            "phoneNumber": self.phone_number
+            "phoneNumber": self.phone_number,
         }

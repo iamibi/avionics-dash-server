@@ -52,7 +52,7 @@ def verify_token(token: str) -> bool:
     user = platform_helper.get_user(user_id=decoded_token["email"])
     if user is not None:
         g.access_context = {
-            "identifier": user["identifier"],
+            "id": user["id"],
             "role": user["role"],
         }
         return True

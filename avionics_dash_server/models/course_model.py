@@ -42,7 +42,7 @@ class Module(BaseModel):
         del serialized["created_at"]
 
         # Convert the bson id to string
-        serialized["identifier"] = str(serialized["identifier"])
+        serialized["id"] = str(serialized["identifier"])
 
         return serialized
 
@@ -85,6 +85,6 @@ class Course(BaseModel):
         del serialized["created_at"]
 
         # Convert the bson id to string
-        serialized["identifier"] = str(serialized["identifier"])
+        serialized["id"] = str(serialized["identifier"])
 
         return serialized

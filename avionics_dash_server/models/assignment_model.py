@@ -1,6 +1,6 @@
 # Standard Library
-from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
+from datetime import date, datetime
 
 # Third-Party Library
 from bson import ObjectId
@@ -11,7 +11,7 @@ class Assignment(BaseModel):
     identifier: ObjectId
     name: str
     desc: str
-    due: datetime
+    due: date
     points: int
     submitted: bool
     grade: str
@@ -45,7 +45,7 @@ class Assignment(BaseModel):
         del serialized["created_at"]
 
         # Convert the bson id to string
-        serialized["identifier"] = str(serialized["identifier"])
+        serialized["id"] = str(serialized["identifier"])
         serialized["due"] = serialized["due"].isoformat()
 
         return serialized

@@ -36,10 +36,16 @@ class TestApi:
         test_client = setup_and_teardown_func
 
         user_data = {
-            "first_name": "Mike",
-            "last_name": "Ross",
+            "firstName": "Mike",
+            "lastName": "Ross",
             "email": "abcd@abc.com",
             "password": "abcd1234",
+            "confirmPassword": "abcd1234",
+            "address": "100 North Tryon Street, Charlotte, NC 28255",
+            "phone": "+18004321000",
+            "role": "s",
+            "dob": "1/1/2000",
+            "gender": "M",
         }
         response = test_client.post(
             "/api/v1/auth/register", json={"data": user_data}, headers={"Content-Type": "application/json"}
@@ -52,10 +58,16 @@ class TestApi:
         test_client = setup_and_teardown_func
         self.create_user(test_client)
         user_data = {
-            "first_name": "Mike",
-            "last_name": "Ross",
+            "firstName": "Mike",
+            "lastName": "Ross",
             "email": "abcd@abc.com",
             "password": "abcd1234",
+            "confirmPassword": "abcd1234",
+            "address": "100 North Tryon Street, Charlotte, NC 28255",
+            "phone": "+18004321000",
+            "role": "s",
+            "dob": "1/1/2000",
+            "gender": "M",
         }
         response = test_client.post(
             "/api/v1/auth/register", json={"data": user_data}, headers={"Content-Type": "application/json"}
@@ -96,10 +108,16 @@ class TestApi:
     @classmethod
     def create_user(cls, test_client):
         user_data = {
-            "first_name": "Mike",
-            "last_name": "Ross",
+            "firstName": "Mike",
+            "lastName": "Ross",
             "email": "abcd@abc.com",
             "password": "abcd1234",
+            "confirmPassword": "abcd1234",
+            "address": "100 North Tryon Street, Charlotte, NC 28255",
+            "phone": "+18004321000",
+            "role": "s",
+            "dob": "1/1/2000",
+            "gender": "M",
         }
         response = test_client.post(
             "/api/v1/auth/register", json={"data": user_data}, headers={"Content-Type": "application/json"}

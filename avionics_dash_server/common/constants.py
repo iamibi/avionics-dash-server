@@ -54,4 +54,4 @@ class Roles:
 class Limits:
     USER_NAME_LIMIT = 10
     PASSWORD_LENGTH_LIMIT = 25
-    ADDRESS_LIMIT = 50
+    ADDRESS_LIMIT = 150
