@@ -1,0 +1,11 @@
+default: &default
+  placeholder: placeholder
+
+dev: &dev
+  <<: *default
+
+test: &test
+  <<: *default
+
+prod: &prod
+  <<: *default
