@@ -22,3 +22,4 @@ def prod_deploy():
         from avionics_dash_server.app import create_app
 
         app = create_app()
+        app.run(debug=False)
