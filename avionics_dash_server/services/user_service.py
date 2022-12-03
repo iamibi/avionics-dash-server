@@ -21,11 +21,11 @@ class UserService(DatabaseService):
         self._collection = self._db[settings.db.avionics_dash.collections.users]
         self.index(mapping=[("email", pymongo.ASCENDING)], unique=True)
 
-    def by_id(self, bson_id: ObjectId, with_pass: bool = False) -> User:
-        user = self.find_one(filter_dict={"_id": bson_id})
+    def by_id(self, user_id: ObjectId, with_pass: bool = False) -> Optional[User]:
+        user = self.find_one_by_id(bson_id=user_id)
         return self.__convert_to_user_obj(user=user, with_pass=with_pass)
 
-    def by_email(self, email_id: str, with_pass: bool = False) -> User:
+    def by_email(self, email_id: str, with_pass: bool = False) -> Optional[User]:
         user = self.find_one(filter_dict={"email": email_id})
         return self.__convert_to_user_obj(user=user, with_pass=with_pass)
 
@@ -54,7 +54,7 @@ class UserService(DatabaseService):
         return True if verification_status.SUCCESS else False
 
     @classmethod
-    def __convert_to_user_obj(cls, user: Dict, with_pass: bool = False) -> User:
+    def __convert_to_user_obj(cls, user: Optional[Dict], with_pass: bool = False) -> User:
         user_obj = None
         if user is not None:
             if with_pass is False:

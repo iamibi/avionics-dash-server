@@ -1,0 +1,2 @@
+class TestAssignmentService:
+    pass

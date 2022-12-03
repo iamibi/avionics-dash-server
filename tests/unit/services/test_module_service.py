@@ -1,0 +1,2 @@
+class TestModuleService:
+    pass

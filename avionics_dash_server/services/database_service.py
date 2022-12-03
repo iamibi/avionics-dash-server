@@ -1,7 +1,8 @@
 # Standard Library
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Union, Optional
 
 # Third-Party Library
+from bson import ObjectId
 from pymongo import MongoClient, errors, database, collection
 
 # Custom Library
@@ -58,6 +59,9 @@ class DatabaseService:
 
         if not response.acknowledged:
             raise exs.DatabaseError("insert_many query failed internally!")
+
+    def find_one_by_id(self, *, bson_id: ObjectId) -> Optional[Dict]:
+        return self.find_one(filter_dict={"_id": bson_id})
 
     def find_one(self, *, filter_dict) -> Dict:
         self.__is_collection_set()
