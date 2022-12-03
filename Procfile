@@ -1,0 +1,1 @@
+web: gunicorn app_prod:prod_deploy
