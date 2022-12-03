@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 # Third-Party Library
 import pymongo
@@ -28,6 +28,14 @@ class AssignmentService(DatabaseService):
     def by_id(self, assignment_id: ObjectId) -> Optional[Assignment]:
         assignment = self.find_one_by_id(bson_id=assignment_id)
         return self.__convert_to_assignment_obj(assignment)
+
+    def by_ids(self, assignment_ids: List[ObjectId]) -> Optional[List[Assignment]]:
+        assignments = self.find(filter_dict={"_id": {"$in": assignment_ids}})
+        return (
+            [self.__convert_to_assignment_obj(assignment) for assignment in assignments]
+            if len(assignments) > 0
+            else None
+        )
 
     def by_name(self, assignment_name: str) -> Optional[Assignment]:
         assignment = self.find_one(filter_dict={"name": assignment_name})

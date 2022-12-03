@@ -1,5 +1,6 @@
 # Standard Library
 from datetime import datetime
+from typing import Dict, Any
 
 # Third-Party Library
 from bson import ObjectId
@@ -35,3 +36,16 @@ class Assignment(BaseModel):
         if v.tzname() != "UTC":
             raise ValueError("The timezone is not in UTC format")
         return v
+
+    def api_serialize(self) -> Dict[str, Any]:
+        serialized = self.dict()
+
+        # Remove unnecessary fields
+        del serialized["updated_at"]
+        del serialized["created_at"]
+
+        # Convert the bson id to string
+        serialized["identifier"] = str(serialized["identifier"])
+        serialized["due"] = serialized["due"].isoformat()
+
+        return serialized

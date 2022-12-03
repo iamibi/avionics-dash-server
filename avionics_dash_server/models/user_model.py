@@ -6,6 +6,9 @@ from datetime import datetime
 from bson import ObjectId
 from pydantic import BaseModel, validator
 
+# Custom Library
+from avionics_dash_server.common.constants import Roles
+
 
 class PasswordModel(BaseModel):
     password_hash: str
@@ -27,7 +30,12 @@ class User(BaseModel):
     identifier: ObjectId = None
     first_name: str
     last_name: str
+    dob: datetime
+    gender: str
     email: str
+    role: Roles.UserRole
+    address: str
+    phone_number: str
     password: PasswordModel = None
     created_at: datetime
     updated_at: datetime
@@ -52,14 +60,14 @@ class User(BaseModel):
         return v
 
     def api_serialize(self) -> Dict[str, Any]:
-        serialized = self.dict()
-
-        # Remove unnecessary fields
-        del serialized["updated_at"]
-        del serialized["created_at"]
-        del serialized["password"]
-
-        # Convert the bson id to string
-        serialized["identifier"] = str(serialized["identifier"])
-
-        return serialized
+        return {
+            "id": str(self.identifier),
+            "firstName": self.first_name,
+            "lastName": self.last_name,
+            "dob": self.dob.isoformat(),
+            "gender": self.gender,
+            "email": self.email,
+            "role": self.role.value,
+            "address": self.address,
+            "phoneNumber": self.phone_number
+        }

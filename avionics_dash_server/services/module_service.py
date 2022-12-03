@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 # Third-Party Library
 import pymongo
@@ -28,6 +28,10 @@ class ModuleService(DatabaseService):
     def by_id(self, module_id: ObjectId) -> Optional[Module]:
         module = self.find_one_by_id(bson_id=module_id)
         return self.__convert_to_module_obj(module)
+
+    def by_ids(self, module_ids: List[ObjectId]) -> Optional[List[Module]]:
+        modules = self.find(filter_dict={"_id": {"$in": module_ids}})
+        return [self.__convert_to_module_obj(module) for module in modules] if len(modules) > 0 else None
 
     def by_name(self, module_name: str) -> Optional[Module]:
         module = self.find_one(filter_dict={"name": module_name})

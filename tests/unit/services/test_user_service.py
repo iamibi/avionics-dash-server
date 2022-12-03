@@ -11,6 +11,7 @@ class TestUserService:
     @pytest.fixture(scope="class")
     def setup_and_teardown_class(self):
         data_store = DataStore(collection_name="users")
+        data_store.clean_up_collection()
         yield data_store
         data_store.clean_up_collection()
 

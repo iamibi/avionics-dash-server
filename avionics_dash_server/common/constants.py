@@ -41,12 +41,17 @@ class PasswordVerificationResult(Enum):
     FAILED = 2
 
 
-class UserRole(Enum):
-    STUDENT = 1
-    TEACHER = 2
-    ADMIN = 3
+class Roles:
+    class UserRole(str, Enum):
+        VISITOR = "v"
+        STUDENT = "s"
+        INSTRUCTOR = "i"
+        ADMIN = "a"
+
+    VALID_USER_ROLES = {UserRole.VISITOR.value, UserRole.STUDENT.value, UserRole.INSTRUCTOR.value, UserRole.ADMIN.value}
 
 
 class Limits:
     USER_NAME_LIMIT = 10
     PASSWORD_LENGTH_LIMIT = 25
+    ADDRESS_LIMIT = 50

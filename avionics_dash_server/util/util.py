@@ -4,6 +4,7 @@ from typing import Any
 from datetime import datetime, timezone, timedelta
 
 # Third-Party Library
+import phonenumbers
 from bson import ObjectId
 from email_validator import EmailNotValidError, validate_email
 
@@ -57,3 +58,19 @@ class Util:
         except exc.ValidationError:
             return False
         return True
+
+    @classmethod
+    def get_id(cls, bson_id: Any) -> ObjectId:
+        if isinstance(bson_id, str) is True:
+            return ObjectId(oid=bson_id)
+        elif isinstance(bson_id, ObjectId) is True:
+            return bson_id
+        raise ValueError("Invalid Object ID passed!")
+
+    @classmethod
+    def is_phone_number_valid(cls, phone_number: str) -> bool:
+        try:
+            phone_number_obj = phonenumbers.parse(number=phone_number, region=None)
+        except phonenumbers.phonenumberutil.NumberParseException:
+            return False
+        return phonenumbers.is_valid_number(phone_number_obj)

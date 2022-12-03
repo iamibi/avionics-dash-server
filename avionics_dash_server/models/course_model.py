@@ -1,5 +1,5 @@
 # Standard Library
-from typing import List
+from typing import Any, Dict, List
 from datetime import datetime
 
 # Third-Party Library
@@ -34,6 +34,18 @@ class Module(BaseModel):
             raise ValueError("The timezone is not in UTC format")
         return v
 
+    def api_serialize(self) -> Dict[str, Any]:
+        serialized = self.dict()
+
+        # Remove unnecessary fields
+        del serialized["updated_at"]
+        del serialized["created_at"]
+
+        # Convert the bson id to string
+        serialized["identifier"] = str(serialized["identifier"])
+
+        return serialized
+
 
 class Course(BaseModel):
     identifier: ObjectId
@@ -64,3 +76,15 @@ class Course(BaseModel):
         if v.tzname() != "UTC":
             raise ValueError("The timezone is not in UTC format")
         return v
+
+    def api_serialize(self) -> Dict[str, Any]:
+        serialized = self.dict()
+
+        # Remove unnecessary fields
+        del serialized["updated_at"]
+        del serialized["created_at"]
+
+        # Convert the bson id to string
+        serialized["identifier"] = str(serialized["identifier"])
+
+        return serialized

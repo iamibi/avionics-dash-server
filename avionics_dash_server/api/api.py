@@ -54,9 +54,14 @@ def get_user(user_id: str):
     return jsonify({"data": user}), 200
 
 
-@avionics_dash_bp.route("/courses/<string:course_id>/modules", methods=[HttpMethod.GET])
+@avionics_dash_bp.route("/courses/<string:course_id>", methods=[HttpMethod.GET])
+@bearer_token_auth.login_required
 def get_modules_for_course(course_id: str):
-    raise NotImplementedError
+    if course_id in {None, ""}:
+        return jsonify({"error": "Course ID not passed!"}), 400
+
+    course = platform_helper.get_course(course_id=course_id)
+    return jsonify({"data": course}), 200
 
 
 @avionics_dash_bp.route("/assignments", methods=[HttpMethod.GET])
