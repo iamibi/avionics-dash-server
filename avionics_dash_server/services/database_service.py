@@ -1,4 +1,6 @@
 # Standard Library
+import os
+from string import Template
 from typing import Any, Dict, List, Union, Optional
 
 # Third-Party Library
@@ -8,6 +10,7 @@ from pymongo import MongoClient, errors, database, collection
 # Custom Library
 from avionics_dash_server.common import exceptions as exs
 from avionics_dash_server.config.settings import settings
+from avionics_dash_server.common.constants import App
 
 
 class DatabaseService:
@@ -15,12 +18,19 @@ class DatabaseService:
     _collection: collection.Collection = None
 
     def __init__(self) -> None:
+        if os.environ["APP_ENV"] == App.PROD_ENV:
+            connection_string = Template(settings.db.avionics_dash.connection_string).substitute(
+                {"password": os.environ["db_password"]}
+            )
+            client = MongoClient(connection_string, tz_aware=True)
+        else:
+            client = MongoClient(
+                host=settings.db.avionics_dash.host,
+                port=settings.db.avionics_dash.port,
+                tz_aware=True,
+            )
+
         db_name = settings.db.avionics_dash.db_name
-        client = MongoClient(
-            host=settings.db.avionics_dash.host,
-            port=settings.db.avionics_dash.port,
-            tz_aware=True,
-        )
         self._db = client[db_name]
 
     def index(self, *, mapping: Union[str, List], unique: bool = False, background: bool = False) -> bool:

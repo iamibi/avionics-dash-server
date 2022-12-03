@@ -9,12 +9,16 @@ from avionics_dash_server.api.api_errors import api_errors
 def create_app() -> Flask:
     """Creates a Flask app instance"""
 
-    app = Flask(__name__)
+    flask_app = Flask(__name__)
 
     # Register the application blueprint with the APIs
-    app.register_blueprint(avionics_dash_bp)
+    flask_app.register_blueprint(avionics_dash_bp)
 
     # Register API error handler
-    api_errors(app)
+    api_errors(flask_app)
 
-    return app
+    return flask_app
+
+
+# Return app
+app = create_app()
