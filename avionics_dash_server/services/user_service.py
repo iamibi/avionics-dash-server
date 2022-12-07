@@ -38,6 +38,11 @@ class UserService(DatabaseService):
 
         self.insert_one(doc=user_obj)
 
+    def add_course_to_user(self, user_id: ObjectId, course_id: ObjectId) -> None:
+        query = {"_id": user_id}
+        update_hash = {"$push": {"course_ids": course_id}}
+        self.update_one(query=query, update_hash=update_hash)
+
     @classmethod
     def create_password_hash(cls, password: str) -> PasswordModel:
         password_hash = PasswordHasher.hash_password(password=password)
