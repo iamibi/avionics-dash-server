@@ -70,6 +70,17 @@ class DatabaseService:
         if not response.acknowledged:
             raise exs.DatabaseError("insert_many query failed internally!")
 
+    def update_one(self, *, query: Dict, update_hash: Dict) -> None:
+        self.__is_collection_set()
+
+        try:
+            response = self._collection.update_one(filter=query, update=update_hash, upsert=False)
+        except errors.PyMongoError as py_err:
+            raise exs.DatabaseError("Error occurred while performing update_one!") from py_err
+
+        if not response.acknowledged:
+            raise exs.DatabaseError("update_one query failed internally!")
+
     def find_one_by_id(self, *, bson_id: ObjectId) -> Optional[Dict]:
         return self.find_one(filter_dict={"_id": bson_id})
 

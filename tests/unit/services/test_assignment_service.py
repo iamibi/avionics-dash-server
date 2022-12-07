@@ -30,7 +30,7 @@ class TestAssignmentService:
         assignment_obj = {
             "name": "Assignment-1",
             "desc": "Explain Principles of Flight with examples",
-            "due": parser.parse("23/12/2022").date(),
+            "due": parser.parse("23/12/2022"),
             "points": "15",
             "submitted": False,
             "grade": "NA",

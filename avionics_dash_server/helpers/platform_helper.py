@@ -10,6 +10,7 @@ from dateutil import parser
 from avionics_dash_server.common import constants as cs
 from avionics_dash_server.common import exceptions as exc
 from avionics_dash_server.util.util import Util
+from avionics_dash_server.models.user_model import User
 
 # Local Modules
 from .platform_service import PlatformService
@@ -23,13 +24,13 @@ class PlatformHelper:
     def __init__(self) -> None:
         self.services = PlatformService()
 
-    def get_user(self, user_id: str) -> Optional[Dict]:
+    def get_user(self, user_id: str, serialize: bool = True) -> Union[None, Dict, User]:
         if Util.is_email_id(user_id) is True:
             email_id = Util.check_email(email_id=user_id)
 
             try:
                 user_obj = self.services.user_service.by_email(email_id=email_id)
-                return None if user_obj is None else user_obj.api_serialize()
+                return self.__get_user_obj(user_obj=user_obj, serialize=serialize)
             except Exception as ex:
                 logger.error("Error fetching user from DB", ex)
                 raise exc.AvionicsDashError("Invalid UserID passed!")
@@ -38,7 +39,7 @@ class PlatformHelper:
 
             try:
                 user_obj = self.services.user_service.by_id(user_id=bson_id)
-                return None if user_obj is None else user_obj.api_serialize()
+                return self.__get_user_obj(user_obj=user_obj, serialize=serialize)
             except Exception as ex:
                 logger.error("Error fetching usr from DB", ex)
                 raise exc.AvionicsDashError("Invalid UserID passed!")
@@ -71,7 +72,7 @@ class PlatformHelper:
             raise
         except Exception as ex:
             logger.error(f"Validation Failed with error.", ex)
-            raise exc.ValidationError("Validation Failed!")
+            raise exc.ValidationError(f"Validation Failed!, {ex}")
 
         try:
             self.services.user_service.create_user(user_obj)
@@ -103,6 +104,66 @@ class PlatformHelper:
                 return serialized
 
         raise exc.ValidationError("Invalid Course ID passed!")
+
+    def get_courses_for_user_id(self, user_id: str) -> Optional[List[Dict]]:
+        user = self.get_user(user_id=user_id, serialize=False)
+        logger.info(f"Fetching courses for user {user.identifier}")
+
+        if user is None:
+            raise exc.AvionicsDashError("User not found!")
+
+        if not len(user.course_ids) > 0:
+            return []
+
+        courses = []
+        try:
+            for course_id in user.course_ids:
+                course = self.get_course(course_id=str(course_id))
+                courses.append(course)
+        except exc.ValidationError:
+            raise
+        except exc.AvionicsDashError:
+            raise
+        except Exception as ex:
+            logger.error(f"Error occurred while fetching course for user {user_id}", ex)
+            raise exc.AvionicsDashError("Unable to fetch the course for the user!")
+        return courses
+
+    def update_user_with_course(self, user_id: str, course_id: str) -> None:
+        if Util.is_bson_id(user_id) is False or Util.is_bson_id(course_id) is False:
+            raise exc.ValidationError("Invalid UserId or CourseId passed!")
+
+        user_id = Util.get_id(user_id)
+        course_id = Util.get_id(course_id)
+        try:
+            user = self.services.user_service.by_id(user_id)
+        except Exception as ex:
+            logger.error(f"Error fetching user {user_id} from DB", ex)
+            raise exc.AvionicsDashError("Invalid UserID passed!")
+
+        if user is None:
+            raise exc.ValidationError("Invalid UserID passed!")
+
+        # If the course id is already present, then return
+        if course_id in user.course_ids:
+            return
+
+        try:
+            course = self.services.course_service.by_id(course_id)
+        except Exception as ex:
+            logger.error(f"Failed to fetch course data for {course_id}", ex)
+            raise exc.AvionicsDashError("Error occurred while fetching the course!")
+
+        if course is None:
+            raise exc.ValidationError("Invalid CourseId Passed!")
+
+        # Update the user with the course ID
+        try:
+            self.services.user_service.add_course_to_user(user_id=user_id, course_id=course_id)
+        except Exception as ex:
+            logger.error(f"Failed to add course data for {course_id} in user {user_id}", ex)
+            raise exc.AvionicsDashError("Error occurred while adding the course to the user!")
+        return
 
     def get_module(self, module_id: str) -> Optional[Dict]:
         module_id = Util.get_id(module_id)
@@ -192,7 +253,7 @@ class PlatformHelper:
             raise exc.ValidationError(f"Invalid gender value passed!")
 
         dob = parser.parse(str(user_data["dob"]))
-        phone_number = str(user_data["phone"])
+        phone_number = str(user_data["phoneNumber"])
         if Util.is_phone_number_valid(phone_number) is False:
             raise exc.ValidationError(f"Invalid phone number passed!")
 
@@ -200,9 +261,18 @@ class PlatformHelper:
         if not 0 < len(address) <= cs.Limits.ADDRESS_LIMIT:
             raise exc.ValidationError(f"Address length is greater than {cs.Limits.ADDRESS_LIMIT}")
 
-        role = str(user_data["role"])
-        if role not in cs.Roles.VALID_USER_ROLES:
-            raise exc.ValidationError(f"Invalid Role value passed!")
+        role = str(user_data["role"]).lower()
+        if role != cs.Roles.UserRole.VISITOR.value:
+            raise exc.ValidationError("Invalid Role value passed!")
+        role = cs.Roles.UserRole.STUDENT.value
+
+        education = str(user_data["education"])
+        if not 0 < len(education) < cs.Limits.EDUCATION_STR_LIMIT:
+            raise exc.ValidationError("Invalid Education Value Passed!")
+
+        facts = str(user_data["facts"])
+        if not 0 < len(facts) < cs.Limits.FACTS_STR_LIMIT:
+            raise exc.ValidationError("Invalid Facts value passed!")
 
         logger.info(f"User {email_id} validation success!")
 
@@ -216,7 +286,18 @@ class PlatformHelper:
             "phone_number": phone_number,
             "address": address,
             "role": role,
+            "course_ids": [],
+            "education": education,
+            "facts": facts,
         }
+
+    @classmethod
+    def __get_user_obj(cls, user_obj: Optional[User], serialize: bool) -> Union[None, Dict, User]:
+        if user_obj is None:
+            return None
+        elif serialize is True:
+            return user_obj.api_serialize()
+        return user_obj
 
 
 # Create a single instance
