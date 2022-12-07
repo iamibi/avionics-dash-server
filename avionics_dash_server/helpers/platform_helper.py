@@ -72,7 +72,7 @@ class PlatformHelper:
             raise
         except Exception as ex:
             logger.error(f"Validation Failed with error.", ex)
-            raise exc.ValidationError("Validation Failed!")
+            raise exc.ValidationError(f"Validation Failed!, {ex}")
 
         try:
             self.services.user_service.create_user(user_obj)
