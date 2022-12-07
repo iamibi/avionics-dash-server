@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Any, Dict
+from typing import Any, Dict, List
 from datetime import date, datetime
 
 # Third-Party Library
@@ -8,6 +8,9 @@ from pydantic import BaseModel, validator
 
 # Custom Library
 from avionics_dash_server.common.constants import Roles
+
+# Local Modules
+from .course_model import Course
 
 
 class PasswordModel(BaseModel):
@@ -37,6 +40,9 @@ class User(BaseModel):
     address: str
     phone_number: str
     password: PasswordModel = None
+    course_ids: List[ObjectId] = []
+    education: str
+    facts: str
     created_at: datetime
     updated_at: datetime
 
@@ -60,6 +66,10 @@ class User(BaseModel):
         return v
 
     def api_serialize(self) -> Dict[str, Any]:
+        str_course_ids = []
+        if len(self.course_ids) > 0:
+            str_course_ids = [str(course_id) for course_id in self.course_ids]
+
         return {
             "id": str(self.identifier),
             "firstName": self.first_name,
@@ -70,4 +80,7 @@ class User(BaseModel):
             "role": self.role.value,
             "address": self.address,
             "phoneNumber": self.phone_number,
+            "course_ids": str_course_ids,
+            "education": self.education,
+            "facts": self.facts,
         }

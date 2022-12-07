@@ -46,6 +46,8 @@ class Assignment(BaseModel):
 
         # Convert the bson id to string
         serialized["id"] = str(serialized["identifier"])
+        del serialized["identifier"]
+
         serialized["due"] = serialized["due"].isoformat()
 
         return serialized

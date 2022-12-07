@@ -54,7 +54,7 @@ class TestCourseService:
         course_obj = {
             "img": "/courses/c1.jpeg",
             "title": "Private Pilot Made Easy Online Ground School",
-            "price": "- $890",
+            "price": "$890",
             "desc": "Our online ground school will help you pass the FAA Private Pilot test with flying colors. "
             "Achieve your dreams of flying an airplane.",
             "modules": [module.identifier],
