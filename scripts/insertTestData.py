@@ -1,7 +1,7 @@
 from avionics_dash_server.config.settings import settings
 from avionics_dash_server.services.user_service import UserService
 from pymongo.errors import BulkWriteError
-from pymongo import ObjectId
+from bson.objectid import ObjectId
 import pymongo
 
 myclient = pymongo.MongoClient(
@@ -28,8 +28,8 @@ course1_id = ObjectId()
 course2_id = ObjectId()
 
 asmnt1_id = ObjectId()
-asmnt2_id == ObjectId()
-asmnt3_id == ObjectId()
+asmnt2_id = ObjectId()
+asmnt3_id = ObjectId()
 
 
 mod1_id = ObjectId()
@@ -100,7 +100,7 @@ test_courses = [
         "title": "Intro to GPS Navigation",
         "price": "950",
         "desc": "First course to take",
-        "modules": [module1_id],
+        "modules": [mod1_id],
         "assignments": [asmnt1_id]
     },
     {
@@ -109,7 +109,7 @@ test_courses = [
         "title": "Intro to Basic Flight",
         "price": "950",
         "desc": "First course to take",
-        "modules": [module2_id],
+        "modules": [mod2_id],
         "assignments": [asmnt2_id]
     }
 ]
