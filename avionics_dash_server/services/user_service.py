@@ -8,6 +8,7 @@ from bson import ObjectId
 # Custom Library
 from avionics_dash_server.util.util import Util
 from avionics_dash_server.config.settings import settings
+from avionics_dash_server.common.constants import PasswordVerificationResult
 from avionics_dash_server.models.user_model import User, PasswordModel
 from avionics_dash_server.util.password_hasher import PasswordHasher
 
@@ -56,7 +57,7 @@ class UserService(DatabaseService):
             hashed_password=retrieved_hash, provided_password=provided_password
         )
 
-        return True if verification_status.SUCCESS else False
+        return True if verification_status == PasswordVerificationResult.SUCCESS else False
 
     @classmethod
     def __convert_to_user_obj(cls, user: Optional[Dict], with_pass: bool = False) -> User:
