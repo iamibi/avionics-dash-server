@@ -261,9 +261,10 @@ class PlatformHelper:
         if not 0 < len(address) <= cs.Limits.ADDRESS_LIMIT:
             raise exc.ValidationError(f"Address length is greater than {cs.Limits.ADDRESS_LIMIT}")
 
-        role = str(user_data["role"])
-        if role not in cs.Roles.VALID_USER_ROLES:
+        role = str(user_data["role"]).lower()
+        if role != cs.Roles.UserRole.VISITOR.value:
             raise exc.ValidationError("Invalid Role value passed!")
+        role = cs.Roles.UserRole.STUDENT.value
 
         education = str(user_data["education"])
         if not 0 < len(education) < cs.Limits.EDUCATION_STR_LIMIT:
