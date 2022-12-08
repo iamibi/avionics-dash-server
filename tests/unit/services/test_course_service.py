@@ -67,6 +67,55 @@ class TestCourseService:
             assert False, f"Error occurred while creating course. {ex}"
         assert True
 
+    def test_get_all(self, setup_and_teardown_func):
+        course_service, module_service, assignment_service = setup_and_teardown_func
+        self.create_courses(course_service, module_service, assignment_service)
+
+        try:
+            courses = course_service.get_all()
+        except Exception as ex:
+            assert False, f"Error occurred while fetching all the courses. {ex}"
+
+        assert len(courses) == 2
+        for course in courses:
+            assert course.identifier is not None
+            assert course.modules is not None
+            assert course.assignments is not None
+
+    @classmethod
+    def create_courses(cls, course_service, module_service, assignment_service):
+        module_obj = cls.create_module(module_service)
+        assignment_obj = cls.create_assignment(assignment_service)
+        module = module_service.by_name(module_name=module_obj["name"])
+        assignment = assignment_service.by_name(assignment_name=assignment_obj["name"])
+
+        course_obj = [
+            {
+                "img": "/courses/c1.jpeg",
+                "title": "Private Pilot Made Easy Online Ground School",
+                "price": "$890",
+                "desc": "Our online ground school will help you pass the FAA Private Pilot test with flying colors. "
+                "Achieve your dreams of flying an airplane.",
+                "modules": [module.identifier],
+                "assignments": [assignment.identifier],
+            },
+            {
+                "img": "/courses/c1.jpeg",
+                "title": "Private Pilot Made Easy",
+                "price": "$860",
+                "desc": "Our online ground school will help you pass the FAA Private Pilot test with flying colors. "
+                "Achieve your dreams of flying an airplane.",
+                "modules": [],
+                "assignments": [],
+            },
+        ]
+
+        for course in course_obj:
+            try:
+                course_service.create_course(course=course)
+            except Exception as ex:
+                assert False, f"Error occurred while creating course. {ex}"
+
     @classmethod
     def create_module(cls, module_service):
         module_obj = {

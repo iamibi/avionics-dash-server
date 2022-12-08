@@ -73,12 +73,18 @@ def add_course_to_user_id(course_id: str, user_id: str):
     return jsonify({}), 204
 
 
+@avionics_dash_bp.route("/courses", methods=[HttpMethod.GET])
+@bearer_token_auth.login_required
+def get_courses():
+    courses = platform_helper.get_courses()
+    return jsonify({"data": courses}), 200
+
+
 @avionics_dash_bp.route("/courses/<string:course_id>", methods=[HttpMethod.GET])
 @bearer_token_auth.login_required
 def get_course(course_id: str):
     if course_id in {None, ""}:
         return jsonify({"error": "Course ID not passed!"}), 400
-
     course = platform_helper.get_course(course_id=course_id)
     return jsonify({"data": course}), 200
 
