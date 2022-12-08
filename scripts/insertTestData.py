@@ -1,24 +1,18 @@
-from avionics_dash_server.config.settings import settings
-from avionics_dash_server.services.user_service import UserService
-from pymongo.errors import BulkWriteError
-from bson.objectid import ObjectId
+# Third-Party Library
 import pymongo
+from dateutil import parser
+from bson.objectid import ObjectId
 
-myclient = pymongo.MongoClient(
-    host=settings.db.avionics_dash.host,
-    port=settings.db.avionics_dash.port
-)
+# Custom Library
+from avionics_dash_server.services.user_service import UserService
+from avionics_dash_server.services.course_service import CourseService
+from avionics_dash_server.services.module_service import ModuleService
+from avionics_dash_server.services.assignment_service import AssignmentService
 
 user_service = UserService()
-
-mydb = myclient[settings.db.avionics_dash.db_name]
-
-users = mydb["users"]
-courses = mydb["courses"]
-assignments = mydb["assignments"]
-media = mydb["media"]
-modules = mydb["modules"]
-messages = mydb["messages"]
+course_service = CourseService()
+module_service = ModuleService()
+assignment_service = AssignmentService()
 
 user1_id = ObjectId()
 user2_id = ObjectId()
@@ -35,63 +29,60 @@ asmnt3_id = ObjectId()
 mod1_id = ObjectId()
 mod2_id = ObjectId()
 
-med1_id = ObjectId()
-med2_id = ObjectId()
-med3_id = ObjectId()
-med4_id = ObjectId()
-med5_id = ObjectId()
-
-msg1_id = ObjectId()
-msg2_id = ObjectId()
-
 test_users = [
     {
-        "_id": user1_id, 
+        "_id": user1_id,
         "first_name": "Tyler",
         "last_name": "Johnson",
-        "dob": "10/01/1998",
-        "gender": "male",
-        "email": "tjohnson@av-dash.edu",
-        "role": "STUDENT",
+        "dob": parser.parse("10/01/1998"),
+        "gender": "M",
+        "email": "tjohnson@gmail.com",
+        "role": "s",
         "address": "123 Sesame St.",
-        "phone_number": "123-456-7890",
-        "password":"password",
-        "courses": [course1_id, course2_id]
+        "phone_number": "+18004321000",
+        "password": "password",
+        "course_ids": [ObjectId("639121637ca4efd619d0e85a"), ObjectId("639121637ca4efd619d0e85b")],
+        "education": "Professional Masters",
+        "facts": "I am creative!",
     },
     {
         "_id": user2_id,
         "first_name": "Ibi",
         "last_name": "Smith",
-        "dob": "10/01/1998",
-        "gender": "male",
-        "email": "test_email@av-dash.edu",
-        "role": "STUDENT",
+        "dob": parser.parse("05/03/1995"),
+        "gender": "M",
+        "email": "test_email@gmail.com",
+        "role": "s",
         "address": "123 Garbage St.",
-        "phone_number": "432-685-2498",
+        "phone_number": "+18004321000",
         "password": "password",
-        "courses": [course2_id]
+        "course_ids": [ObjectId("639121637ca4efd619d0e85a")],
+        "education": "Master of Science",
+        "facts": "I am invincible!",
     },
     {
         "_id": user3_id,
         "first_name": "Disha",
         "last_name": "Spock",
-        "dob": "10/01/1998",
-        "gender": "female",
-        "email": "spock123@av-dash.edu",
+        "dob": parser.parse("06/06/1998"),
+        "gender": "F",
+        "email": "spock123@gmail.com",
         "address": "123 Water St.",
         "phone_number": "935-439-2500",
-        "role": "TEACHER",
+        "role": "i",
         "password": "password",
-        "courses": [course1_id, course2_id]
-    }
+        "course_ids": [ObjectId("639121637ca4efd619d0e85a"), ObjectId("639121637ca4efd619d0e85b")],
+        "education": "PhD. Instructor",
+        "facts": "I am available for help!",
+    },
 ]
 
 for user in test_users:
     try:
         user_service.create_user(user)
         print("Inserted 1 record to the users collection")
-    except:
-        print("Error inserting user")
+    except Exception as ex:
+        print(f"Error inserting user. {ex}")
 
 test_courses = [
     {
@@ -101,7 +92,7 @@ test_courses = [
         "price": "950",
         "desc": "First course to take",
         "modules": [mod1_id],
-        "assignments": [asmnt1_id]
+        "assignments": [asmnt1_id],
     },
     {
         "_id": course2_id,
@@ -110,60 +101,69 @@ test_courses = [
         "price": "950",
         "desc": "First course to take",
         "modules": [mod2_id],
-        "assignments": [asmnt2_id]
-    }
+        "assignments": [asmnt2_id],
+    },
 ]
-try:
-    result = courses.insert_many(test_courses)
-    print("Inserted {} records to the courses collection".format(len(result.inserted_ids)))
-except(BulkWriteError):
-    print("Courses already exist. Skipping...")
+
+for course in test_courses:
+    try:
+        course_service.create_course(course)
+    except Exception as ex:
+        print(f"Error with course {ex}. Skipping...")
 
 test_modules = [
-    {"_id": mod1_id, "name": "module 1 name", "desc": "module 1 desc", "url": "courses/module1"},
-    {"_id": mod2_id, "name": "module 2 name", "desc": "module 2 desc", "url": "courses/module2"} 
+    {
+        "_id": mod1_id,
+        "name": "module 1 name",
+        "desc": "module 1 desc",
+        "url": "https://www.youtube.com/watch?v=WZOk2Y65_5w&t=3s",
+    },
+    {
+        "_id": mod2_id,
+        "name": "module 2 name",
+        "desc": "module 2 desc",
+        "url": "https://www.youtube.com/watch?v=WZOk2Y65_5w&t=3s",
+    },
 ]
 
-try:
-    result = modules.insert_many(test_modules)
-    print("Inserted {} records to the modules collection".format(len(result.inserted_ids)))
-except(BulkWriteError):
-    print("Modules already exist. Skipping...")
-
+for module in test_modules:
+    try:
+        module_service.create_module(module)
+    except Exception as ex:
+        print(f"Error with module {ex}. Skipping...")
 
 test_assignments = [
-    {"_id": asmnt1_id, "name": "Quiz 1", "type": "PERSONAL", "course": "GPS101"},
-    {"_id": asmnt2_id, "name": "Discussion 1", "type": "DISCUSSION", "course": "GPS101"},
-    {"_id": asmnt3_id, "name": "Project 1", "type": "GROUP", "course": "FLY101"}
+    {
+        "_id": asmnt1_id,
+        "name": "Quiz 1",
+        "desc": "Explain Principles of Flight with examples",
+        "due": parser.parse("23/12/2022"),
+        "points": "15",
+        "submitted": False,
+        "grade": "NA",
+    },
+    {
+        "_id": asmnt2_id,
+        "name": "Discussion 1",
+        "desc": "Explain Principles of Flight with examples",
+        "due": parser.parse("22/11/2022"),
+        "points": "15",
+        "submitted": False,
+        "grade": "NA",
+    },
+    {
+        "_id": asmnt3_id,
+        "name": "Project 1",
+        "desc": "Explain Principles of Flight with examples",
+        "due": parser.parse("10/10/2019"),
+        "points": "15",
+        "submitted": False,
+        "grade": "NA",
+    },
 ]
 
-try:
-    result = assignments.insert_many(test_assignments)
-    print("Inserted {} records to the assignments collection".format(len(result.inserted_ids)))
-except(BulkWriteError):
-    print("Assignments already exist. Skipping...")
-    
-test_media = [
-    {"_id": med1_id, "filetype": "pdf", "name": "GPS Map 1", "description": "A PDF map describing the GPS area", "path": "/media/gps-map-1.pdf"},
-    {"_id": med2_id, "filetype": "mp4", "name": "Ignition Video 1", "description": "A video demonstrating ignition", "path": "/media/ignition-vid-1.mp4"},
-    {"_id": med3_id, "filetype": "png", "name": "GPS Button Labels", "description": "An image of button labels on gps", "path": "/media/gps-buttons-1.png"},
-    {"_id": med4_id, "filetype": "txt", "name": "Flight Instructions", "description": "How to fly a plane", "path": "/media/fly.txt"},
-    {"_id": med5_id, "filetype": "mp3", "name": "Plane Sounds", "description": "Normal plane sounds", "path": "/media/plane-woosh.mp3"}
-]
-
-try:
-    result = media.insert_many(test_media)
-    print("Inserted {} records to the media collection".format(len(result.inserted_ids)))
-except(BulkWriteError):
-    print("Media already exists. Skipping...")
-
-
-test_messages = [
-    {"_id": msg1_id, "from_user": user1_id, "subject": "First Message", "content": "Hi, this is my first message", "to_user": user2_id, "has_read": True},
-    {"_id": msg2_id, "from_user": user2_id, "subject": "Responding", "content": "Congrats!", "to_user": user1_id, "has_read": False}
-]
-try:
-    result = messages.insert_many(test_messages)
-    print("Inserted {} records to the messages collection".format(len(result.inserted_ids)))
-except(BulkWriteError):
-    print("Messages already exists. Skipping...")
+for assignment in test_assignments:
+    try:
+        assignment_service.create_assignment(assignment)
+    except Exception as ex:
+        print(f"Error with assignment {ex}. Skipping...")
