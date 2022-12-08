@@ -74,7 +74,6 @@ def add_course_to_user_id(course_id: str, user_id: str):
 
 
 @avionics_dash_bp.route("/courses", methods=[HttpMethod.GET])
-@bearer_token_auth.login_required
 def get_courses():
     courses = platform_helper.get_courses()
     return jsonify({"data": courses}), 200
