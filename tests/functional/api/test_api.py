@@ -248,7 +248,7 @@ class TestApi:
         assert login_response.status_code == 201
 
         response = test_client.get(
-            "/api/v1/courses",
+            "/api/v1/courses/all",
             headers={"Authorization": f"Bearer {login_response.json['token']}", "Content-Type": "application/json"},
         )
         assert response.status_code == 200
