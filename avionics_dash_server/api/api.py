@@ -99,9 +99,18 @@ def get_module(module_id: str):
 
 
 @avionics_dash_bp.route("/assignments/<string:assignment_id>", methods=[HttpMethod.GET])
+@bearer_token_auth.login_required
 def get_assignment(assignment_id: str):
     if assignment_id in {None, ""}:
         return jsonify({"error": "Module ID not passed!"}), 400
 
     assignment = platform_helper.get_assignment(assignment_id=assignment_id)
     return jsonify({"data": assignment}), 200
+
+
+@avionics_dash_bp.route("/users/<string:user_id>/assignment", methods=[HttpMethod.POST])
+@bearer_token_auth.login_required
+def create_assignment(user_id: str):
+    request_json = request.json
+    assignment = platform_helper.create_assignment(user_id=user_id, assignment_dict=request_json)
+    return jsonify({"data": assignment}), 201

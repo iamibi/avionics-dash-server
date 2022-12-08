@@ -5,6 +5,7 @@ from tests.data import DataStore
 
 # Custom Library
 from avionics_dash_server.app import create_app
+from avionics_dash_server.services.user_service import UserService
 from avionics_dash_server.services.course_service import CourseService
 from avionics_dash_server.services.module_service import ModuleService
 from avionics_dash_server.services.assignment_service import AssignmentService
@@ -253,6 +254,58 @@ class TestApi:
         assert response.status_code == 200
         assert "data" in response.json
         assert len(response.json["data"]) == 2
+
+    def test_create_assignment(self, setup_and_teardown_func):
+        test_client = setup_and_teardown_func
+        self.create_courses()
+        user = self.create_instructor_user()
+
+        # Get a token
+        login_response = test_client.post(
+            "/api/v1/auth/login",
+            json={"email": user.email, "password": "abcd1234"},
+            headers={"Content-Type": "application/json"},
+        )
+        assert login_response.status_code == 201
+
+        response = test_client.post(
+            f"/api/v1/users/{user.identifier}/assignment",
+            json={
+                "name": "Assignment-6",
+                "desc": "Explain Principles of Flight with examples",
+                "due": parser.parse("23/12/2022"),
+                "points": "15",
+                "submitted": False,
+                "grade": "NA",
+            },
+            headers={"Authorization": f"Bearer {login_response.json['token']}"},
+        )
+        assert response.status_code == 201
+        assert "data" in response.json
+
+    @classmethod
+    def create_instructor_user(cls):
+        user_service = UserService()
+        user_obj = {
+            "email": "test_instructor@abc.com",
+            "password": "abcd1234",
+            "first_name": "Mike",
+            "last_name": "Ross",
+            "address": "100 North Tryon Street, Charlotte, NC 28255",
+            "phone_number": "+18004321000",
+            "role": "i",
+            "dob": parser.parse("1/1/2000"),
+            "gender": "M",
+            "course_ids": [],
+            "education": "PhD. Faculty",
+            "facts": "I am creative!",
+        }
+        try:
+            user_service.create_user(user_obj)
+            user_obj = user_service.by_email(user_obj["email"])
+        except Exception as ex:
+            assert False, f"Failed to create user. Error: {ex}"
+        return user_obj
 
     @classmethod
     def create_courses(cls):

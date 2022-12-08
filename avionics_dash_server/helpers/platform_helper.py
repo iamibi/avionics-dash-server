@@ -1,6 +1,7 @@
 # Standard Library
 import logging
 from typing import Any, Dict, List, Union, Optional
+from datetime import datetime, timezone
 
 # Third-Party Library
 from bson import ObjectId
@@ -152,6 +153,36 @@ class PlatformHelper:
             raise exc.AvionicsDashError("Unable to fetch the course for the user!")
         return courses
 
+    def create_assignment(self, user_id: str, assignment_dict: Dict) -> Dict:
+        user = self.get_user(user_id=user_id, serialize=False)
+        if user.role not in {cs.Roles.UserRole.INSTRUCTOR, cs.Roles.UserRole.ADMIN}:
+            raise exc.InsufficientPrivilegeError("You don't have sufficient privileges!")
+
+        try:
+            assignment_obj = self.__validate_assignment_obj(assignment_dict=assignment_dict)
+        except exc.ValidationError:
+            raise
+        except Exception as ex:
+            logger.error("Error occurred while validating assignment object", ex)
+            raise exc.ValidationError("Error occurred while validating!")
+
+        try:
+            self.services.assignment_service.create_assignment(assignment=assignment_obj)
+        except Exception as ex:
+            logger.error("Error occurred while creating the assignment!", ex)
+            raise exc.AvionicsDashError("Unable to create the assignment")
+
+        try:
+            assignment_obj = self.services.assignment_service.by_name(assignment_name=assignment_obj["name"])
+        except Exception as ex:
+            logger.error("Error occurred while fetching the assignment", ex)
+            raise exc.AvionicsDashError("Unable to create and fetch the assignment!")
+
+        if assignment_obj is None:
+            raise exc.AvionicsDashError("Unable to fetch the assignment!")
+
+        return assignment_obj.api_serialize()
+
     def update_user_with_course(self, user_id: str, course_id: str) -> None:
         if Util.is_bson_id(user_id) is False or Util.is_bson_id(course_id) is False:
             raise exc.ValidationError("Invalid UserId or CourseId passed!")
@@ -238,6 +269,47 @@ class PlatformHelper:
         except Exception as ex:
             logger.error(f"Error occurred while fetching assignments!", ex)
             raise exc.AvionicsDashError("Unable to fetch assignments!")
+
+    def __validate_assignment_obj(self, assignment_dict: Dict):
+        name = str(assignment_dict["name"])
+
+        if not 0 < len(name) < cs.Limits.ASSIGNMENT_NAME_LIMIT:
+            raise exc.ValidationError("Invalid Assignment Length Passed!")
+
+        try:
+            assignment = self.services.assignment_service.by_name(assignment_name=name)
+        except Exception as ex:
+            raise exc.ValidationError("Validation failed at confirmation!")
+
+        if assignment is not None:
+            raise exc.ValidationError("Assignment already exists!")
+
+        desc = str(assignment_dict["desc"])
+        if not 0 < len(desc) < cs.Limits.ASSIGNMENT_DESC_LIMIT:
+            raise exc.ValidationError("Invalid description length passed!")
+
+        due = parser.parse(str(assignment_dict["due"]))
+        if due < datetime.now(tz=timezone.utc):
+            raise exc.ValidationError("A future date is required!")
+
+        points = int(assignment_dict["points"])
+        if not 0 < points <= 100:
+            raise exc.ValidationError("Points should be between 0 to 100!")
+
+        submitted = bool(assignment_dict["submitted"])
+        grade = str(assignment_dict["grade"])
+
+        if not 0 < len(grade) <= 2:
+            raise exc.ValidationError("Invalid grade value passed!")
+
+        return {
+            "name": name,
+            "desc": desc,
+            "due": due,
+            "points": points,
+            "submitted": submitted,
+            "grade": grade,
+        }
 
     def __validate_user_register(self, user_data) -> Dict[str, Any]:
         if "email" not in user_data:
