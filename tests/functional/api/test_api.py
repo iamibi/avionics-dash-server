@@ -234,6 +234,57 @@ class TestApi:
         assert response.status_code == 200
         assert "data" in response.json
 
+    def test_get_all_courses(self, setup_and_teardown_func):
+        test_client = setup_and_teardown_func
+        self.create_courses()
+        user = self.create_user(test_client=test_client)
+        # Get a token
+        login_response = test_client.post(
+            "/api/v1/auth/login",
+            json={"email": "abcd@abc.com", "password": "abcd1234"},
+            headers={"Content-Type": "application/json"},
+        )
+        assert login_response.status_code == 201
+
+        response = test_client.get(
+            "/api/v1/courses",
+            headers={"Authorization": f"Bearer {login_response.json['token']}", "Content-Type": "application/json"},
+        )
+        assert response.status_code == 200
+        assert "data" in response.json
+        assert len(response.json["data"]) == 2
+
+    @classmethod
+    def create_courses(cls):
+        module = cls.create_module()
+        assignment = cls.create_assignment()
+        course_service = CourseService()
+        course_obj = [
+            {
+                "img": "/courses/c1.jpeg",
+                "title": "Private Pilot Made Easy Online Ground School",
+                "price": "$890",
+                "desc": "Our online ground school will help you pass the FAA Private Pilot test with flying colors. "
+                "Achieve your dreams of flying an airplane.",
+                "modules": [module.identifier],
+                "assignments": [assignment.identifier],
+            },
+            {
+                "img": "/courses/c1.jpeg",
+                "title": "Private Pilot Made Easy",
+                "price": "$860",
+                "desc": "Our online ground school will help you pass the FAA Private Pilot test with flying colors. "
+                "Achieve your dreams of flying an airplane.",
+                "modules": [],
+                "assignments": [],
+            },
+        ]
+        for course in course_obj:
+            try:
+                course_service.create_course(course=course)
+            except Exception as ex:
+                assert False, f"Error occurred while creating course. {ex}"
+
     @classmethod
     def create_course(cls):
         module = cls.create_module()
