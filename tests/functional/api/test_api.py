@@ -206,6 +206,34 @@ class TestApi:
         assert response.status_code == 200
         assert "data" in response.json
 
+    def test_get_user_with_courses(self, setup_and_teardown_func):
+        test_client = setup_and_teardown_func
+        course = self.create_course()
+        user = self.create_user(test_client=test_client)
+
+        # Get a token
+        login_response = test_client.post(
+            "/api/v1/auth/login",
+            json={"email": "abcd@abc.com", "password": "abcd1234"},
+            headers={"Content-Type": "application/json"},
+        )
+        assert login_response.status_code == 201
+
+        # Add the course to the user
+        response = test_client.put(
+            f"/api/v1/courses/{course.identifier}/add/{user['id']}",
+            headers={"Authorization": f"Bearer {login_response.json['token']}", "Content-Type": "application/json"},
+        )
+
+        assert response.status_code == 204
+
+        response = test_client.get(
+            "/api/v1/users/abcd%40abc.com", headers={"Authorization": f"Bearer {login_response.json['token']}"}
+        )
+
+        assert response.status_code == 200
+        assert "data" in response.json
+
     @classmethod
     def create_course(cls):
         module = cls.create_module()
