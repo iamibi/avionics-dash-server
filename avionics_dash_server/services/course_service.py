@@ -1,5 +1,5 @@
 # Standard Library
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 # Third-Party Library
 import pymongo
@@ -32,6 +32,12 @@ class CourseService(DatabaseService):
     def by_title(self, course_title: str) -> Optional[Course]:
         course = self.find_one(filter_dict={"title": course_title})
         return self.__convert_to_course_obj(course)
+
+    def get_all(self) -> Optional[List[Course]]:
+        courses = self.find(filter_dict={})
+        if len(courses) == 0:
+            return None
+        return [self.__convert_to_course_obj(course) for course in courses]
 
     @classmethod
     def __convert_to_course_obj(cls, course: Dict) -> Course:

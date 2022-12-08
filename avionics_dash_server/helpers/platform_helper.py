@@ -81,6 +81,29 @@ class PlatformHelper:
 
         return self.get_user(user_obj["email"])
 
+    def get_courses(self) -> Optional[List[Dict]]:
+        try:
+            courses = self.services.course_service.get_all()
+        except Exception as ex:
+            logger.error(f"Failed to fetch all the courses", ex)
+            raise exc.AvionicsDashError("Unable to fetch all the courses")
+
+        if courses is None:
+            return None
+
+        serialized_courses = []
+        for course in courses:
+            serialized = course.api_serialize()
+            if len(course.modules) > 0:
+                modules = self.get_modules(module_ids=course.modules)
+                serialized["modules"] = modules
+            if len(course.assignments) > 0:
+                assignments = self.get_assignments(assignment_ids=course.assignments)
+                serialized["assignments"] = assignments
+            serialized_courses.append(serialized)
+
+        return serialized_courses
+
     def get_course(self, course_id: str) -> Optional[Dict]:
         if Util.is_bson_id(identifier=course_id) is True:
             course_id = Util.get_id(course_id)
