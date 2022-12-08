@@ -73,7 +73,7 @@ def add_course_to_user_id(course_id: str, user_id: str):
     return jsonify({}), 204
 
 
-@avionics_dash_bp.route("/courses", methods=[HttpMethod.GET])
+@avionics_dash_bp.route("/courses/all", methods=[HttpMethod.GET])
 def get_courses():
     courses = platform_helper.get_courses()
     return jsonify({"data": courses}), 200
